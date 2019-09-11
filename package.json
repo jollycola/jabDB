@@ -1,0 +1,27 @@
+{
+  "name": "jabDB",
+  "version": "0.1.0",
+  "description": "Just A Basic Database",
+  "main": "dist/JabDB.js",
+  "repository": "https://github.com/jollycola/jabDB.git",
+  "author": "Mathias Andresen <dev@andresen.xyz>",
+  "license": "MIT",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "npm run build-ts",
+    "rebuild": "npm run clean && npm run build",
+    "watch": "tsc --watch",
+    "serve": "node dist/server.js",
+    "build-ts": "tsc -p tsconfig.json",
+    "tslint": "tslint -p tsconfig.json"
+  },
+  "private": true,
+  "dependencies": {
+    "lodash": "^4.17.15"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.138",
+    "tslint": "^5.20.0",
+    "typescript": "^3.6.3"
+  }
+}
