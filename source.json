@@ -1,0 +1,20 @@
+{
+    "meta": {
+        "amountOfTables": 0
+    },
+    "tables": [
+        {
+            "name": "test_table",
+            "entries": [
+                {
+                    "id":"1",
+                    "value": {
+                        "number": 10,
+                        "streng": "navnet er jamil"
+                    }
+                }
+
+            ]
+        }
+    ]
+}

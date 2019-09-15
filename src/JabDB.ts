@@ -1,19 +1,19 @@
-import _ from "lodash";
 import Adapter from "./adapters/Adapter";
+import JabTable from "./JabTable";
 
-export default class JabDB <T> {
-    
+export default class JabDB {
     private adapter: Adapter;
+
+    private meta: JabDBMeta;
+    private tables: Map<string, JabTable<any>>;
     
     constructor(adapter: Adapter){
         this.adapter = adapter;
     }
 
 
-    public get(): T {
+}
 
-        this.adapter
-
-    }
-
+export class JabDBMeta {
+    amountOfTables: number;
 }
