@@ -13,7 +13,7 @@ export default class JabTable<T> {
         return this.entries.get(id).getValue();
     }
 
-    public find(predicate: (v: JabEntry<T>) => unknown): T {
+    public find(predicate: (v: JabEntry<T>) => boolean): T {
         return Array.from(this.entries.values()).find(predicate).getValue();
     }
 }
