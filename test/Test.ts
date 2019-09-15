@@ -19,20 +19,11 @@ describe("SingleFileAdapter", ()=> {
         adapter.readMeta();
     })
 
-    it("readTable_type", async () => {
-        const table = await adapter.readTable<test>("test_table");
-        assert.typeOf(table, "object");
-
-        console.log(table);
-        
-    });
 
     it("readTable", async ()=>{       
         const table = await adapter.readTable<test>("test_table");
 
-        console.log(table instanceof JabTable);
-
-        table.find((v) => v.getValue().getValue().number == 10);
+        console.log(table);
     })
 
 

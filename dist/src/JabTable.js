@@ -1,6 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class JabTable {
+    constructor(name, entries) {
+        this.name = name;
+        this.entries = entries;
+    }
     get(id) {
         return this.entries.get(id).getValue();
     }

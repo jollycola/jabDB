@@ -12,11 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const Adapter_1 = __importDefault(require("./Adapter"));
 const fs_1 = __importDefault(require("fs"));
 const util_1 = __importDefault(require("util"));
 const readFile = util_1.default.promisify(fs_1.default.readFile);
-class SingleFileAdapter {
+class SingleFileAdapter extends Adapter_1.default {
     constructor(source) {
+        super();
         this.source = source;
         this.checkSource().catch((reason) => {
             throw reason;
@@ -59,10 +61,14 @@ class SingleFileAdapter {
     readTable(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const data = yield this.readSource();
-            const tables = data.tables;
-            console.log(tables);
-            console.log(tables[0].get("1"));
-            return (tables.find(v => v.name == id));
+            if (data.tables != undefined) {
+                const _tables = data.tables;
+                const tables = this.plainToJabTables(_tables);
+                return tables.get(id);
+            }
+            else {
+                throw new Error("[MalformedSourceFileError]: Object missing a 'tables' field");
+            }
         });
     }
     write() {

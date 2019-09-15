@@ -14,7 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const chai_1 = require("chai");
 const SingleFileAdapter_1 = __importDefault(require("../src/adapters/SingleFileAdapter"));
-const JabTable_1 = __importDefault(require("../src/JabTable"));
 describe("SingleFileAdapter", () => {
     let adapter;
     beforeEach(() => {
@@ -26,15 +25,9 @@ describe("SingleFileAdapter", () => {
     it("readMeta", () => {
         adapter.readMeta();
     });
-    it("readTable_type", () => __awaiter(void 0, void 0, void 0, function* () {
-        const table = yield adapter.readTable("test_table");
-        chai_1.assert.typeOf(table, "object");
-        console.log(table);
-    }));
     it("readTable", () => __awaiter(void 0, void 0, void 0, function* () {
         const table = yield adapter.readTable("test_table");
-        console.log(table instanceof JabTable_1.default);
-        table.find((v) => v.getValue().getValue().number == 10);
+        console.log(table);
     }));
 });
 class test {

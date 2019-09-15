@@ -10,15 +10,17 @@ import { stringify } from "querystring";
 
 const readFile = util.promisify(fs.readFile);
 
-export default class SingleFileAdapter implements Adapter {
+export default class SingleFileAdapter extends Adapter {
     private source: string;
     
     constructor(source: string) {
+        super();
+
         this.source = source;
 
         this.checkSource().catch((reason) => {
             throw reason;
-        })        
+        });
     }
 
     private async checkSource(): Promise<boolean> {
@@ -57,15 +59,20 @@ export default class SingleFileAdapter implements Adapter {
         return meta;
     }
 
-    async readTable<T>(id: string): Promise<JabTable<JabEntry<T>>> {
+    async readTable<T>(id: string): Promise<JabTable<T>> {
         const data = await this.readSource();
-        
-        const tables = data.tables as JabTable<any>[];
 
-        console.log(tables);
-        console.log(tables[0].get("1"));
-        
-        return (tables.find(v => v.name == id)) as JabTable<JabEntry<T>>;
+        if (data.tables != undefined) {
+            const _tables = data.tables;
+
+            const tables = this.plainToJabTables<T>(_tables);
+                
+            return tables.get(id);
+
+        } else {
+            throw new Error("[MalformedSourceFileError]: Object missing a 'tables' field");
+        }
+
     }
 
     write() {
