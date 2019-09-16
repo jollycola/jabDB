@@ -52,7 +52,7 @@ export default class SingleFileAdapter extends Adapter {
         try {
             const data = await this.readSource();
             if (data.meta != undefined) {
-                const meta = new JabDBMeta();
+                const meta = new JabDBMeta(data.meta.doCaching, data.meta.cachingLifespan);
 
                 return meta;                
             } else {

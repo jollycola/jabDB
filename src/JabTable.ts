@@ -4,6 +4,8 @@ export default class JabTable<T> {
     name: string;
     entries: Map<string, JabEntry<T>>;
 
+    cacheTimestamp: number = -1;
+
     constructor(name: string, entries: Map<string, JabEntry<T>>) {
         this.name = name;
         this.entries = entries;
@@ -13,7 +15,7 @@ export default class JabTable<T> {
         return this.entries.get(id).getValue();
     }
 
-    public find(predicate: (v: JabEntry<T>) => boolean): T {
-        return Array.from(this.entries.values()).find(predicate).getValue();
+    public find(predicate: (v: T) => boolean): T {
+        return Array.from(this.entries.values()).find(v => predicate(v.getValue())).getValue();
     }
 }
