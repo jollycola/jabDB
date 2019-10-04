@@ -5,8 +5,9 @@ import JabEntry from "../JabEntry";
 export default abstract class Adapter {
 
     abstract readMeta(): Promise<JabDBMeta>;
+    abstract writeMeta(meta: JabDBMeta): Promise<any>;
     abstract readTable(id: string): Promise<JabTable<any>>;
-    abstract write(): void;
+    abstract writeTable<T>(table: JabTable<T>): Promise<any>;
 
     protected plainToJabTables<T>(tables: any[]): Map<string, JabTable<T>> {
         let map = new Map<string, JabTable<T>>();

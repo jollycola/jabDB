@@ -4,10 +4,8 @@ import { JabDBMeta } from "../JabDB";
 import JabEntry from "../JabEntry";
 import { MalformedSourceFileError, IOError } from "../errors/Errors";
 
-
-import fs from "fs";
+import fs, { writeFile } from "fs";
 import util from "util";
-import { stringify } from "querystring";
 
 const readFile = util.promisify(fs.readFile);
 
@@ -48,20 +46,38 @@ export default class SingleFileAdapter extends Adapter {
         });
     }
 
+    private async writeSource<T>(meta?: JabDBMeta, tables?: JabTable<T>[]): Promise<any> {
+        return new Promise<any>((resolve, reject) => {
+            if (!meta) meta = new JabDBMeta();
+            if (!tables) tables = [];
+
+            const data = { meta: meta, tables: tables };
+            const json = JSON.stringify(data);
+
+            writeFile(this.source, json, { flag: "w" }, (err) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        });
+    }
+
     async readMeta(): Promise<JabDBMeta> {
         try {
             const data = await this.readSource();
             if (data.meta != undefined) {
-                const meta = new JabDBMeta(data.meta.doCaching, data.meta.cachingLifespan);
+                const meta = new JabDBMeta(data.meta.doCaching, data.meta.cacheLifespan);
 
-                return meta;                
+                return meta;
             } else {
                 throw new MalformedSourceFileError("Object missing a 'meta' field");
             }
-    
+
 
         } catch (err) {
-            throw new err;
+            throw err;
         }
     }
 
@@ -75,13 +91,35 @@ export default class SingleFileAdapter extends Adapter {
                 const tables = this.plainToJabTables<T>(_tables);
 
                 return tables.get(id);
-
             } else {
                 throw new MalformedSourceFileError("Object missing a 'tables' field");
             }
         } catch (err) {
             throw err;
         }
+    }
+
+    async writeMeta(meta: JabDBMeta): Promise<any> {
+        return new Promise((resolve, reject)=> {
+
+            if (meta.doCaching) {
+                if (!meta.cacheLifespan) {
+                    meta = new JabDBMeta(meta.doCaching);
+                }
+            } else {
+                meta = new JabDBMeta();
+            }
+    
+            this.writeSource(meta).then(()=>{
+                resolve();
+            }).catch((err)=>{
+                reject(err);
+            });
+        });
+    }
+
+    writeTable<T>(table: JabTable<T>): Promise<any> {
+        throw new Error("Method not implemented.");
     }
 
     write() {

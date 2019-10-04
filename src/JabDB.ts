@@ -6,9 +6,14 @@ export default class JabDB {
 
     private meta: JabDBMeta;
     private tables: Map<string, JabTable<any>> = new Map<string, JabTable<any>>();
-    
-    constructor(adapter: Adapter){
+
+    constructor(adapter: Adapter, meta?: JabDBMeta) {
         this.adapter = adapter;
+        if (meta) {
+            this.meta = meta;
+        } else {
+            this.meta = new JabDBMeta();
+        }
     }
 
     public async getTable(id: string): Promise<JabTable<any>> {
@@ -18,11 +23,11 @@ export default class JabDB {
             table = this.tables.get(id);
 
             if (this.meta.doCaching) {
-                if (table.cacheTimestamp == -1 || (table.cacheTimestamp + this.meta.cacheLifespan) < Date.now()){
+                if (table.cacheTimestamp == -1 || (table.cacheTimestamp + this.meta.cacheLifespan) < Date.now()) {
                     return this.adapter.readTable(id)
                 }
             }
-            
+
             return this.tables.get(id);
 
         } else {
@@ -35,11 +40,11 @@ export default class JabDB {
                 throw Error("No table with id '" + id + "' exists");
             }
         }
-        
+
     }
 
     // TODO: Returning "Not yet implemented";
-    public async createTable(id: string): Promise<JabTable<any>> {
+    public async createTable(id: string, returnIfAlreadyExists: boolean = true): Promise<JabTable<any>> {
         this.adapter.readTable(id).then((table: JabTable<any>) => {
             console.log(table);
 
@@ -48,11 +53,15 @@ export default class JabDB {
             }
 
             if (this.tables.has(id)) {
-                return this.tables.get(id);
+                if (returnIfAlreadyExists) {
+                    return this.tables.get(id);
+                } else {
+                    throw Error("Table with id '" + id + "' already exists!");
+                }
             }
         }).catch(err => {
             throw err;
-        }) ;
+        });
 
 
         throw Error("Not yet implemented");
