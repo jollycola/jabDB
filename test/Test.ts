@@ -62,6 +62,20 @@ describe("SingleFileAdapter", () => {
         expect(data.cacheLifespan).to.equal(1050);
     })
 
+    it("adapter_writeMeta_tablesNotNull", async () => {
+        /* TODO: Do test where the tables field is not empty in the file, 
+            and make sure that it is not overridden on writeMeta() */
+
+        // adapter = new SingleFileAdapter("./data/test/writable.json");
+        
+        // const meta = new JabDBMeta(true, 1050);
+        // await adapter.writeMeta(meta);
+        
+        // const data = await adapter.readMeta();
+        // expect(data.doCaching).to.equal(true);
+        // expect(data.cacheLifespan).to.equal(1050);
+    })
+
     it("db_getTable", async () => {
         const db = new JabDB(adapter);
 

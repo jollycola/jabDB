@@ -46,7 +46,7 @@ export default class SingleFileAdapter extends Adapter {
         });
     }
 
-    private async writeSource<T>(meta?: JabDBMeta, tables?: JabTable<T>[]): Promise<any> {
+    private async writeSource<T>(meta: JabDBMeta, tables: JabTable<T>[]): Promise<any> {
         return new Promise<any>((resolve, reject) => {
             if (!meta) meta = new JabDBMeta();
             if (!tables) tables = [];
@@ -100,8 +100,7 @@ export default class SingleFileAdapter extends Adapter {
     }
 
     async writeMeta(meta: JabDBMeta): Promise<any> {
-        return new Promise((resolve, reject)=> {
-
+        return new Promise((resolve, reject) => {
             if (meta.doCaching) {
                 if (!meta.cacheLifespan) {
                     meta = new JabDBMeta(meta.doCaching);
@@ -109,16 +108,23 @@ export default class SingleFileAdapter extends Adapter {
             } else {
                 meta = new JabDBMeta();
             }
-    
-            this.writeSource(meta).then(()=>{
-                resolve();
-            }).catch((err)=>{
-                reject(err);
-            });
+
+            // Get tables from the file
+            let tables: JabTable<any>[] = [];
+            this.readSource().then((value) => {
+                if (value.tables) tables = value.tables;
+
+                this.writeSource(meta, tables).then(() => {
+                    resolve();
+                }).catch(reject);
+            }).catch(reject);
         });
     }
 
     writeTable<T>(table: JabTable<T>): Promise<any> {
+        // return new Promise((resolve, reject) => {
+
+        // })
         throw new Error("Method not implemented.");
     }
 
