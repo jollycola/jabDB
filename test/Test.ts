@@ -6,8 +6,12 @@ import JabEntry from "../src/JabEntry";
 import { IOError } from "../src/errors/Errors";
 import JabDB, { JabDBMeta } from "../src/JabDB";
 import Adapter from "../src/adapters/Adapter";
+import fs from "fs";
 
 chai.use(chaiAsPromised);
+
+const WRITABLE_PATH = "data/test/writable.json";
+const PREFILLED_PATH = "data/test/prefilled.json";
 
 describe("SingleFileAdapter", () => {
     let adapter: SingleFileAdapter;
@@ -52,7 +56,8 @@ describe("SingleFileAdapter", () => {
     })
 
     it("adapter_writeMeta", async () => {
-        adapter = new SingleFileAdapter("./data/test/writable.json");
+        adapter = new SingleFileAdapter(WRITABLE_PATH);
+        await adapter.connect();
         
         const meta = new JabDBMeta(true, 1050);
         await adapter.writeMeta(meta);
@@ -60,20 +65,23 @@ describe("SingleFileAdapter", () => {
         const data = await adapter.readMeta();
         expect(data.doCaching).to.equal(true);
         expect(data.cacheLifespan).to.equal(1050);
+
+        fs.unlinkSync(WRITABLE_PATH);
     })
 
     it("adapter_writeMeta_tablesNotNull", async () => {
-        /* TODO: Do test where the tables field is not empty in the file, 
-            and make sure that it is not overridden on writeMeta() */
+        adapter = new SingleFileAdapter("./data/test/writable.json");
 
-        // adapter = new SingleFileAdapter("./data/test/writable.json");
+        const jsonPrefilled = fs.readFileSync("./data/test/prefilled.json").toString();
+        fs.writeFileSync("./data/test/writable.json", jsonPrefilled, { flag: "w" });
         
-        // const meta = new JabDBMeta(true, 1050);
-        // await adapter.writeMeta(meta);
+        const meta = new JabDBMeta(true, 1050);
+        await adapter.writeMeta(meta);
         
-        // const data = await adapter.readMeta();
-        // expect(data.doCaching).to.equal(true);
-        // expect(data.cacheLifespan).to.equal(1050);
+        const table = await adapter.readTable("test_table");
+        assert.isDefined(table);
+
+        fs.unlinkSync(WRITABLE_PATH);
     })
 
     it("db_getTable", async () => {
@@ -154,6 +162,10 @@ class TestClass {
 }
 
 class TestingAdapter extends Adapter {
+    connect(): Promise<any> {
+        throw new Error("Method not implemented.");
+    }
+
     public tables = new Map<string, JabTable<any>>();
     public meta = new JabDBMeta(false);
 

@@ -4,6 +4,7 @@ import JabEntry from "../JabEntry";
 
 export default abstract class Adapter {
 
+    abstract connect(): Promise<any>;
     abstract readMeta(): Promise<JabDBMeta>;
     abstract writeMeta(meta: JabDBMeta): Promise<any>;
     abstract readTable(id: string): Promise<JabTable<any>>;

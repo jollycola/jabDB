@@ -18,10 +18,37 @@ export default class SingleFileAdapter extends Adapter {
         this.source = source;
     }
 
+    public async connect(): Promise<any> {
+        return new Promise(async (resolve, reject) => {
+
+            if (fs.existsSync(this.source)) {
+                this.checkSource().then(()=> {
+                    fs.readFile(this.source, (err, data) => {
+                        if (err) reject(err);
+    
+                        this.validateData(data.toString()).then(resolve).catch(reject);
+                    });
+                }).catch(reject);
+
+            } else {
+                fs.writeFile(this.source, JSON.stringify({ meta: {}, tables: [] }), (err) => {
+                    if (err) reject(err);
+    
+                    resolve();
+                });
+            }
+        });
+    }
+
     private async checkSource(): Promise<boolean> {
         return new Promise<boolean>(async (resolve, reject) => {
+
+            if (!this.source.endsWith(".json")) {
+                reject(new MalformedSourceFileError("Source file is not a '.json' file!"))
+            }
+
             if (fs.existsSync(this.source)) {
-                await fs.stat(this.source, (err, stats) => {
+                fs.stat(this.source, (err, stats) => {
                     if (err) {
                         reject(err);
                     }
@@ -36,9 +63,31 @@ export default class SingleFileAdapter extends Adapter {
         });
     }
 
+    private async validateData(data: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+
+            try {
+                const json = JSON.parse(data);
+
+                if (!json.meta){
+                    reject(new MalformedSourceFileError("Source data missing a 'meta' field"));
+                }
+                if (!json.tables){
+                    reject(new MalformedSourceFileError("Source data missing a 'tables' field"));
+                }
+
+                console.log("resolving")
+                resolve();
+
+            } catch (err) {
+                reject(new MalformedSourceFileError(err));
+            }
+        });
+    }
+
     private async readSource(): Promise<any> {
         return new Promise<any>((resolve, reject) => {
-            this.checkSource().then(async value => {
+            this.checkSource().then(async () => {
                 resolve(JSON.parse((await readFile(this.source)).toString()));
             }).catch(err => {
                 reject(err);
@@ -65,20 +114,25 @@ export default class SingleFileAdapter extends Adapter {
     }
 
     async readMeta(): Promise<JabDBMeta> {
-        try {
-            const data = await this.readSource();
-            if (data.meta != undefined) {
-                const meta = new JabDBMeta(data.meta.doCaching, data.meta.cacheLifespan);
-
-                return meta;
-            } else {
-                throw new MalformedSourceFileError("Object missing a 'meta' field");
+        return new Promise(async (resolve, reject) => {
+            try {
+                console.log("before read source")
+                const data = await this.readSource();
+                console.log("after read source")
+                if (data.meta != undefined) {
+                    const meta = new JabDBMeta(data.meta.doCaching, data.meta.cacheLifespan);
+                    console.log("returning meta")
+                    resolve(meta);
+                } else {
+                    reject(new MalformedSourceFileError("Object missing a 'meta' field"));
+                }
+    
+            } catch (err) {
+                reject(err);
             }
 
+        })
 
-        } catch (err) {
-            throw err;
-        }
     }
 
     async readTable<T>(id: string): Promise<JabTable<T>> {

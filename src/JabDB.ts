@@ -16,6 +16,12 @@ export default class JabDB {
         }
     }
 
+    public async connect(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.adapter.connect().then(resolve).catch(reject);
+        });
+    }
+
     public async getTable(id: string): Promise<JabTable<any>> {
         let table;
 
