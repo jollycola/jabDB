@@ -1,15 +1,46 @@
 import JabTable from "../JabTable";
 import { JabDBMeta } from "../JabDB";
 import JabEntry from "../JabEntry";
+import { MalformedSourceFileError } from "../errors";
 
 export default abstract class Adapter {
 
+    /**
+     * Connect to the database source
+     */
     abstract connect(): Promise<any>;
+
+    /**
+     * Read the database metadata
+     * @abstract
+     * @returns {Promise<JabDBMeta>}
+     * @memberof Adapter
+     */
     abstract readMeta(): Promise<JabDBMeta>;
+    /**
+     * Write the database metadata to the database source
+     * @abstract
+     * @param {JabDBMeta} meta The JabDBMeta object containing database metadata
+     * @returns {Promise<any>}
+     * @memberof Adapter
+     */
     abstract writeMeta(meta: JabDBMeta): Promise<any>;
+    /**
+     * Read a table from the database
+     * @param id The id of the table to read
+     * @returns {Promise<JabTable<any>>} Promise object represents the Table
+     */
     abstract readTable(id: string): Promise<JabTable<any>>;
+    /**
+     * Writes a table to the database source
+     * @param table The table to write to the database source
+     */
     abstract writeTable<T>(table: JabTable<T>): Promise<any>;
 
+    /**
+     * Converts an array of plain objects into a map of JabTable objects mapped by their id
+     * @param tables The array of plain objects 
+     */
     protected plainToJabTables<T>(tables: any[]): Map<string, JabTable<T>> {
         let map = new Map<string, JabTable<T>>();
 
@@ -29,18 +60,18 @@ export default abstract class Adapter {
                             entries.set(newEntry.getId(), newEntry);
 
                         } else {
-                            throw new Error("[MalformedSourceFileError]: Entry missing 'id' or 'value' field")
+                            throw new MalformedSourceFileError("[MalformedSourceFileError]: Entry missing 'id' or 'value' field")
                         }
                     });
                 } else {
-                    throw new Error("[MalformedSourceFileError]: Table does not contain an 'entries' field")
+                    throw new MalformedSourceFileError("[MalformedSourceFileError]: Table does not contain an 'entries' field")
                 }
                 
                 const jabTable = new JabTable<T>(table.name, entries);
                 map.set(jabTable.name, jabTable);
 
             } else {
-                throw new Error("[MalformedSourceFileError]: Table does not contain a 'name' field")
+                throw new MalformedSourceFileError("Table does not contain a 'name' field")
             }
         })
         

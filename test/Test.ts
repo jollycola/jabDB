@@ -3,7 +3,7 @@ import chaiAsPromised from "chai-as-promised";
 import SingleFileAdapter from "../src/adapters/SingleFileAdapter";
 import JabTable from "../src/JabTable";
 import JabEntry from "../src/JabEntry";
-import { IOError } from "../src/errors/Errors";
+import { IOError } from "../src/errors";
 import JabDB, { JabDBMeta } from "../src/JabDB";
 import Adapter from "../src/adapters/Adapter";
 import fs from "fs";

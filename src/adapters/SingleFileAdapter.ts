@@ -1,33 +1,45 @@
 import Adapter from "./Adapter";
 import JabTable from "../JabTable";
 import { JabDBMeta } from "../JabDB";
-import JabEntry from "../JabEntry";
-import { MalformedSourceFileError, IOError } from "../errors/Errors";
+import { MalformedSourceFileError, IOError } from "../errors";
 
 import fs, { writeFile } from "fs";
-import util from "util";
+import util, { inherits } from "util";
 
 const readFile = util.promisify(fs.readFile);
 
+/**
+ * An adapter for JabDB that uses a single file as the source,
+ * and uses aync methods
+ * @extends Adapter
+ */
 export default class SingleFileAdapter extends Adapter {
     private source: string;
+    private requireJSONFile: boolean;
 
-    constructor(source: string) {
+    
+    /**
+     * Creates an instance of SingleFileAdapter.
+     * @param {string} source The path of the source file
+     * @param {boolean} [requireJSONFile=true] Whether to require the file to 
+     * be a .json file (``true`` by default)
+     */
+    constructor(source: string, requireJSONFile: boolean = true) {
         super();
 
         this.source = source;
+        this.requireJSONFile;
     }
 
+    /** @inheritdoc */
     public async connect(): Promise<any> {
         return new Promise(async (resolve, reject) => {
 
             if (fs.existsSync(this.source)) {
                 this.checkSource().then(() => {
-                    fs.readFile(this.source, (err, data) => {
-                        if (err) reject(err);
-
+                    readFile(this.source).then(data => {
                         this.validateData(data.toString()).then(resolve).catch(reject);
-                    });
+                    }).catch(reject)
                 }).catch(reject);
 
             } else {
@@ -40,23 +52,27 @@ export default class SingleFileAdapter extends Adapter {
         });
     }
 
+
+    /**
+     * Checks that the source file exists, and is a .json file
+     * @private
+     * @returns {Promise<boolean>}
+     * @memberof SingleFileAdapter
+     */
     private async checkSource(): Promise<boolean> {
         return new Promise<boolean>(async (resolve, reject) => {
 
-            if (!this.source.endsWith(".json")) {
+            if (this.requireJSONFile && !this.source.endsWith(".json")) {
                 reject(new MalformedSourceFileError("Source file is not a '.json' file!"))
             }
 
             if (fs.existsSync(this.source)) {
-                fs.stat(this.source, (err, stats) => {
-                    if (err) {
-                        reject(err);
-                    }
+                util.promisify(fs.stat)(this.source).then(stats => {
                     if (!stats.isFile()) {
                         reject(new IOError("Source '" + this.source + "' is not a file!"));
                     }
                     resolve(true);
-                })
+                }).catch(reject);
             } else {
                 reject(new IOError("Source '" + this.source + "' does not exist!"));
             }
@@ -76,7 +92,6 @@ export default class SingleFileAdapter extends Adapter {
                     reject(new MalformedSourceFileError("Source data missing a 'tables' field"));
                 }
 
-                console.log("resolving")
                 resolve();
 
             } catch (err) {
@@ -107,7 +122,17 @@ export default class SingleFileAdapter extends Adapter {
         });
     }
 
-    private async writeSource<T>(meta: JabDBMeta, tables: JabTable<T>[]): Promise<any> {
+    
+
+    /**
+     * Writes the passed meta and tables objects to the source file
+     * @private
+     * @param {JabDBMeta} meta
+     * @param {JabTable<any>[]} tables
+     * @returns {Promise<void>} Returns a void promise
+     * @memberof SingleFileAdapter
+     */
+    private async writeSource(meta: JabDBMeta, tables: JabTable<any>[]): Promise<void> {
         return new Promise<any>((resolve, reject) => {
             if (!meta) meta = new JabDBMeta();
             if (!tables) tables = [];
@@ -115,25 +140,19 @@ export default class SingleFileAdapter extends Adapter {
             const data = { meta: meta, tables: tables };
             const json = JSON.stringify(data);
 
-            writeFile(this.source, json, { flag: "w" }, (err) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve();
-                }
-            });
+            util.promisify(writeFile)(this.source, json, { flag: "w" })
+                .then(resolve)
+                .catch(reject);
         });
     }
 
-    async readMeta(): Promise<JabDBMeta> {
+    /** @inheritdoc */
+    public async readMeta(): Promise<JabDBMeta> {
         return new Promise(async (resolve, reject) => {
             try {
-                console.log("before read source")
                 const data = await this.readSource();
-                console.log("after read source")
                 if (data.meta != undefined) {
                     const meta = new JabDBMeta(data.meta.doCaching, data.meta.cacheLifespan);
-                    console.log("returning meta")
                     resolve(meta);
                 } else {
                     reject(new MalformedSourceFileError("Object missing a 'meta' field"));
@@ -142,12 +161,12 @@ export default class SingleFileAdapter extends Adapter {
             } catch (err) {
                 reject(err);
             }
-
         })
 
     }
 
-    async readTable<T>(id: string): Promise<JabTable<T>> {
+    /** @inheritdoc */
+    public async readTable<T>(id: string): Promise<JabTable<T>> {
         try {
             const data = await this.readSource();
 
@@ -165,7 +184,8 @@ export default class SingleFileAdapter extends Adapter {
         }
     }
 
-    async writeMeta(meta: JabDBMeta): Promise<any> {
+    /** @inheritdoc */
+    public async writeMeta(meta: JabDBMeta): Promise<any> {
         return new Promise((resolve, reject) => {
             if (meta.doCaching) {
                 if (!meta.cacheLifespan) {
@@ -190,7 +210,8 @@ export default class SingleFileAdapter extends Adapter {
         });
     }
 
-    writeTable<T>(table: JabTable<T>): Promise<any> {
+    /** @inheritdoc */
+    public writeTable<T>(table: JabTable<T>): Promise<any> {
         throw new Error("Method not implemented.");
 
         return new Promise((resolve, reject) => {

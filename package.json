@@ -14,7 +14,7 @@
     "build-ts": "tsc -p tsconfig.json",
     "tslint": "tslint -p tsconfig.json",
     "build-and-test": "yarn build && yarn test",
-    "test": "mocha dist/test/Test.js"
+    "test": "mocha -r ts-node/register test/**/*.ts"
   },
   "private": true,
   "dependencies": {
@@ -29,7 +29,9 @@
     "@types/node": "^12.7.5",
     "chai": "^4.2.0",
     "mocha": "^6.2.0",
+    "ts-node": "^8.4.1",
     "tslint": "^5.20.0",
+    "typedoc": "^0.15.0",
     "typescript": "^3.6.3"
   }
 }
