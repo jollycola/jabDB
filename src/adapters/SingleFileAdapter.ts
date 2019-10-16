@@ -3,10 +3,8 @@ import JabTable from "../JabTable";
 import { JabDBMeta } from "../JabDB";
 import { MalformedSourceFileError, IOError } from "../errors";
 
-import fs, { writeFile } from "fs";
+import fs, { writeFile, readFile } from "fs";
 import util, { inherits } from "util";
-
-const readFile = util.promisify(fs.readFile);
 
 /**
  * An adapter for JabDB that uses a single file as the source,
@@ -37,7 +35,7 @@ export default class SingleFileAdapter extends Adapter {
 
             if (fs.existsSync(this.source)) {
                 this.checkSource().then(() => {
-                    readFile(this.source).then(data => {
+                    util.promisify(readFile)(this.source).then(data => {
                         this.validateData(data.toString()).then(resolve).catch(reject);
                     }).catch(reject)
                 }).catch(reject);
@@ -103,7 +101,7 @@ export default class SingleFileAdapter extends Adapter {
     private async readSource(): Promise<any> {
         return new Promise<any>((resolve, reject) => {
             this.checkSource().then(async () => {
-                resolve(JSON.parse((await readFile(this.source)).toString()));
+                resolve(JSON.parse((await util.promisify(readFile)(this.source)).toString()));
             }).catch(err => {
                 reject(err);
             });
