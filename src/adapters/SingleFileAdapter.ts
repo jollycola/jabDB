@@ -22,10 +22,10 @@ export default class SingleFileAdapter extends Adapter {
         return new Promise(async (resolve, reject) => {
 
             if (fs.existsSync(this.source)) {
-                this.checkSource().then(()=> {
+                this.checkSource().then(() => {
                     fs.readFile(this.source, (err, data) => {
                         if (err) reject(err);
-    
+
                         this.validateData(data.toString()).then(resolve).catch(reject);
                     });
                 }).catch(reject);
@@ -33,7 +33,7 @@ export default class SingleFileAdapter extends Adapter {
             } else {
                 fs.writeFile(this.source, JSON.stringify({ meta: {}, tables: [] }), (err) => {
                     if (err) reject(err);
-    
+
                     resolve();
                 });
             }
@@ -69,10 +69,10 @@ export default class SingleFileAdapter extends Adapter {
             try {
                 const json = JSON.parse(data);
 
-                if (!json.meta){
+                if (!json.meta) {
                     reject(new MalformedSourceFileError("Source data missing a 'meta' field"));
                 }
-                if (!json.tables){
+                if (!json.tables) {
                     reject(new MalformedSourceFileError("Source data missing a 'tables' field"));
                 }
 
@@ -92,6 +92,18 @@ export default class SingleFileAdapter extends Adapter {
             }).catch(err => {
                 reject(err);
             });
+        });
+    }
+
+    private async readTables(): Promise<JabTable<any>[]> {
+        return new Promise<JabTable<any>[]>((resolve, reject) => {
+            this.readSource().then((data) => {
+                if (data.tables) {
+                    resolve(data.tables);
+                } else {
+                    reject(new MalformedSourceFileError("Source file missing 'tables' field!"));
+                }
+            }).catch(reject);
         });
     }
 
@@ -126,7 +138,7 @@ export default class SingleFileAdapter extends Adapter {
                 } else {
                     reject(new MalformedSourceFileError("Object missing a 'meta' field"));
                 }
-    
+
             } catch (err) {
                 reject(err);
             }
@@ -165,6 +177,9 @@ export default class SingleFileAdapter extends Adapter {
 
             // Get tables from the file
             let tables: JabTable<any>[] = [];
+            this.readTables().then(_tables => {
+                tables = _tables;
+            });
             this.readSource().then((value) => {
                 if (value.tables) tables = value.tables;
 
@@ -176,10 +191,14 @@ export default class SingleFileAdapter extends Adapter {
     }
 
     writeTable<T>(table: JabTable<T>): Promise<any> {
-        // return new Promise((resolve, reject) => {
-
-        // })
         throw new Error("Method not implemented.");
+
+        return new Promise((resolve, reject) => {
+            const meta = this.readMeta();
+            let tables: JabTable<any>[] = [];
+
+
+        })
     }
 
     write() {
