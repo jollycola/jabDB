@@ -14,7 +14,8 @@
     "build-ts": "tsc -p tsconfig.json",
     "tslint": "tslint -p tsconfig.json",
     "build-and-test": "yarn build && yarn test",
-    "test": "mocha -r ts-node/register test/**/*.ts"
+    "test": "mocha -r ts-node/register test/**/*.ts",
+    "docs": "typedoc"
   },
   "private": true,
   "dependencies": {
