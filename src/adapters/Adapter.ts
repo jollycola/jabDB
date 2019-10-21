@@ -2,6 +2,7 @@ import JabTable from "../JabTable";
 import { JabDBMeta } from "../JabDB";
 import JabEntry from "../JabEntry";
 import { MalformedSourceFileError } from "../errors";
+import _ from "lodash"
 
 export default abstract class Adapter {
 
@@ -44,7 +45,7 @@ export default abstract class Adapter {
     protected plainToJabTables<T>(tables: any[]): Map<string, JabTable<T>> {
         let map = new Map<string, JabTable<T>>();
 
-        tables.forEach((table: any) => {
+        _.forEach(tables, (table: any) => {
 
             // Check if table has a 'name' field
             if (table.name != undefined) {
@@ -53,7 +54,7 @@ export default abstract class Adapter {
 
                 // Check if table has an 'entries' field
                 if (table.entries != undefined) {
-                    table.entries.forEach((entry: any) => {
+                    _.forEach(table.entries, entry => {
                         // Check if entry has an id and value field
                         if (entry.id != undefined && entry.value != undefined) {
                             const newEntry = new JabEntry<T>(entry.id, entry.value);
@@ -68,8 +69,7 @@ export default abstract class Adapter {
                 }
                 
                 const jabTable = new JabTable<T>(table.name, entries);
-                map.set(jabTable.name, jabTable);
-
+                _.set(map, jabTable.name, jabTable);
             } else {
                 throw new MalformedSourceFileError("Table does not contain a 'name' field")
             }

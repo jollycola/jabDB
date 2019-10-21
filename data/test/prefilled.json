@@ -1,20 +1,20 @@
 {
-    "meta": {
-        "doCaching": false
-    },
-    "tables": [
+  "meta": {
+    "doCaching": false
+  },
+  "tables": {
+    "test_table": {
+      "cacheTimestamp": -1,
+      "name": "test_table",
+      "entries": [
         {
-            "name": "test_table",
-            "entries": [
-                {
-                    "id":"1",
-                    "value": {
-                        "number": 10,
-                        "streng": "navnet er jamil"
-                    }
-                }
-
-            ]
+          "id": "1",
+          "value": {
+            "number": 10,
+            "streng": "random string"
+          }
         }
-    ]
+      ]
+    }
+  }
 }

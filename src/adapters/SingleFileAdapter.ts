@@ -5,6 +5,7 @@ import { MalformedSourceFileError, IOError } from "../errors";
 
 import fs, { writeFile, readFile } from "fs";
 import util, { inherits } from "util";
+import _ from "lodash";
 
 /**
  * An adapter for JabDB that uses a single file as the source,
@@ -14,7 +15,6 @@ import util, { inherits } from "util";
 export default class SingleFileAdapter extends Adapter {
     private source: string;
     private requireJSONFile: boolean;
-
     
     /**
      * Creates an instance of SingleFileAdapter.
@@ -108,11 +108,11 @@ export default class SingleFileAdapter extends Adapter {
         });
     }
 
-    private async readTables(): Promise<JabTable<any>[]> {
-        return new Promise<JabTable<any>[]>((resolve, reject) => {
+    private async readTables(): Promise<Map<string, JabTable<any>>> {
+        return new Promise((resolve, reject) => {
             this.readSource().then((data) => {
                 if (data.tables) {
-                    resolve(data.tables);
+                    resolve(this.plainToJabTables(data.tables));
                 } else {
                     reject(new MalformedSourceFileError("Source file missing 'tables' field!"));
                 }
@@ -130,10 +130,10 @@ export default class SingleFileAdapter extends Adapter {
      * @returns {Promise<void>} Returns a void promise
      * @memberof SingleFileAdapter
      */
-    private async writeSource(meta: JabDBMeta, tables: JabTable<any>[]): Promise<void> {
+    private async writeSource(meta: JabDBMeta, tables: Map<string, JabTable<any>>): Promise<void> {
         return new Promise<any>((resolve, reject) => {
             if (!meta) meta = new JabDBMeta();
-            if (!tables) tables = [];
+            if (!tables) tables = new Map<string, JabTable<any>>();
 
             const data = { meta: meta, tables: tables };
             const json = JSON.stringify(data);
@@ -165,26 +165,17 @@ export default class SingleFileAdapter extends Adapter {
 
     /** @inheritdoc */
     public async readTable<T>(id: string): Promise<JabTable<T>> {
-        try {
-            const data = await this.readSource();
-
-            if (data.tables != undefined) {
-                const _tables = data.tables;
-
-                const tables = this.plainToJabTables<T>(_tables);
-
-                return tables.get(id);
-            } else {
-                throw new MalformedSourceFileError("Object missing a 'tables' field");
-            }
-        } catch (err) {
-            throw err;
-        }
+        return new Promise((resolve, reject) => {
+            this.readTables()
+                // .then(tables => console.log(_.get(tables, id))) //TODO: REMOVE
+                .then(tables => resolve(_.get(tables, id)))
+                .catch(reject);
+        });
     }
 
     /** @inheritdoc */
     public async writeMeta(meta: JabDBMeta): Promise<any> {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             if (meta.doCaching) {
                 if (!meta.cacheLifespan) {
                     meta = new JabDBMeta(meta.doCaching);
@@ -193,30 +184,32 @@ export default class SingleFileAdapter extends Adapter {
                 meta = new JabDBMeta();
             }
 
-            // Get tables from the file
-            let tables: JabTable<any>[] = [];
-            this.readTables().then(_tables => {
-                tables = _tables;
-            });
-            this.readSource().then((value) => {
-                if (value.tables) tables = value.tables;
-
-                this.writeSource(meta, tables).then(() => {
-                    resolve();
-                }).catch(reject);
-            }).catch(reject);
+            this.readTables()
+                .then(tables => {
+                    this.writeSource(meta, tables)
+                        .then(resolve)
+                        .catch(reject)
+                })
+                .catch(reject);
         });
     }
 
     /** @inheritdoc */
     public writeTable<T>(table: JabTable<T>): Promise<any> {
-        throw new Error("Method not implemented.");
-
         return new Promise((resolve, reject) => {
-            const meta = this.readMeta();
-            let tables: JabTable<any>[] = [];
-
-
+            this.readMeta()
+                .then(meta => {
+                    this.readTables()
+                        .then(tables => {  
+                            _.set(tables, table.name, table); 
+                                                        
+                            this.writeSource(meta, tables)
+                                .then(resolve)
+                                .catch(reject);
+                        })
+                        .catch(reject);          
+                })
+                .catch(reject);
         })
     }
 

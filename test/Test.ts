@@ -7,6 +7,7 @@ import { IOError } from "../src/errors";
 import JabDB, { JabDBMeta } from "../src/JabDB";
 import Adapter from "../src/adapters/Adapter";
 import fs from "fs";
+import _ from "lodash";
 
 chai.use(chaiAsPromised);
 
@@ -17,7 +18,15 @@ describe("SingleFileAdapter", () => {
     let adapter: SingleFileAdapter;
 
     beforeEach(() => {
-        adapter = new SingleFileAdapter("data/test/prefilled.json");
+        adapter = new SingleFileAdapter(PREFILLED_PATH);
+    })
+
+    xit("test" , () => {
+        const map = new Map<string, JabTable<any>>();
+        _.set(map, "test_table", new JabTable<any>("test_table", new Map<string, JabEntry<any>>()))
+        _.set(map, "test_table2", new JabTable<any>("test_table2", new Map<string, JabEntry<any>>()))
+
+        console.log(JSON.stringify(map));
     })
 
     it("adapter_badsource_throws", async () => {
@@ -80,6 +89,38 @@ describe("SingleFileAdapter", () => {
         
         const table = await adapter.readTable("test_table");
         assert.isDefined(table);
+
+        fs.unlinkSync(WRITABLE_PATH);
+    })
+
+    it("adapter_writeTable", async () => {
+        adapter = new SingleFileAdapter(WRITABLE_PATH);
+        await adapter.connect();
+
+        const table = new JabTable<any>("writetable_test", new Map<string, JabEntry<any>>());
+        await adapter.writeTable(table);
+
+        expect(await adapter.readTable(table.name)).to.deep.equal(table);
+
+        fs.unlinkSync(WRITABLE_PATH);
+    })
+
+    it("adapter_writeTable_notempty", async () => {
+        adapter = new SingleFileAdapter(WRITABLE_PATH);
+        const jsonPrefilled = fs.readFileSync(PREFILLED_PATH).toString();
+        fs.writeFileSync(WRITABLE_PATH, jsonPrefilled, { flag: "w" });
+
+
+        const readTable = await adapter.readTable("test_table");
+
+        const testItem = new TestClass(100, "test_string");
+        readTable.entries.set("2", new JabEntry("2", testItem));
+
+        await adapter.writeTable(readTable);
+        
+        const newTable = await adapter.readTable("test_table")
+
+        // expect(newTable.entries.size).to.equal(2);
 
         fs.unlinkSync(WRITABLE_PATH);
     })
