@@ -1,6 +1,9 @@
 import Adapter from "./adapters/Adapter";
 import JabTable from "./JabTable";
 
+import _ from "lodash";
+import { rejects } from "assert";
+
 export default class JabDB {
     private adapter: Adapter;
 
@@ -22,31 +25,32 @@ export default class JabDB {
         });
     }
 
+    /**
+     * Get a table from the database. 
+     * @param id The id of the table to search for
+     * @returns {Promise<JabTable<any>>} The table found, as a promise. The promise is 
+     * rejected if the table was not found
+     */
     public async getTable(id: string): Promise<JabTable<any>> {
-        let table;
+        return new Promise(async (resolve, reject) => {
+            let table;
 
-        if (this.tables.has(id)) {
-            table = this.tables.get(id);
-
-            if (this.meta.doCaching) {
+            if (this.meta.doCaching && _.has(table, id)) {
+                table = _.get(this.tables, id);  
                 if (table.cacheTimestamp == -1 || (table.cacheTimestamp + this.meta.cacheLifespan) < Date.now()) {
-                    return this.adapter.readTable(id)
+                    table = await this.adapter.readTable(id);
                 }
-            }
-
-            return this.tables.get(id);
-
-        } else {
-            table = await this.adapter.readTable(id);
-
-            if (table != undefined) {
-                this.tables.set(table.name, table);
-                return table;
             } else {
-                throw Error("No table with id '" + id + "' exists");
+                table = await this.adapter.readTable(id);
             }
-        }
 
+
+            if (table != undefined){
+                _.set(this.tables, id, table);
+                resolve(table);
+            } 
+            else reject(new Error("No table with id '" + id + "' exists"));
+        });
     }
 
     // TODO: Returning "Not yet implemented";

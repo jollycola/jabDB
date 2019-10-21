@@ -21,7 +21,7 @@ describe("SingleFileAdapter", () => {
         adapter = new SingleFileAdapter(PREFILLED_PATH);
     })
 
-    xit("test" , () => {
+    xit("test", () => {
         const map = new Map<string, JabTable<any>>();
         _.set(map, "test_table", new JabTable<any>("test_table", new Map<string, JabEntry<any>>()))
         _.set(map, "test_table2", new JabTable<any>("test_table2", new Map<string, JabEntry<any>>()))
@@ -67,10 +67,10 @@ describe("SingleFileAdapter", () => {
     it("adapter_writeMeta", async () => {
         adapter = new SingleFileAdapter(WRITABLE_PATH);
         await adapter.connect();
-        
+
         const meta = new JabDBMeta(true, 1050);
         await adapter.writeMeta(meta);
-        
+
         const data = await adapter.readMeta();
         expect(data.doCaching).to.equal(true);
         expect(data.cacheLifespan).to.equal(1050);
@@ -83,10 +83,10 @@ describe("SingleFileAdapter", () => {
 
         const jsonPrefilled = fs.readFileSync("./data/test/prefilled.json").toString();
         fs.writeFileSync("./data/test/writable.json", jsonPrefilled, { flag: "w" });
-        
+
         const meta = new JabDBMeta(true, 1050);
         await adapter.writeMeta(meta);
-        
+
         const table = await adapter.readTable("test_table");
         assert.isDefined(table);
 
@@ -117,7 +117,7 @@ describe("SingleFileAdapter", () => {
         readTable.entries.set("2", new JabEntry("2", testItem));
 
         await adapter.writeTable(readTable);
-        
+
         const newTable = await adapter.readTable("test_table")
 
         // expect(newTable.entries.size).to.equal(2);
@@ -153,6 +153,11 @@ xdescribe("JabDB", () => {
     it("getTable_defined", () => {
         const table = db.getTable("test1");
         assert.isDefined(table);
+    })
+
+    it("getTable_cached", () => {
+        // TODO: WRITE A NEW TEST, TESTING THE CACHING
+        db = new JabDB(new SingleFileAdapter(WRITABLE_PATH), {doCaching: true, cacheLifespan: 100000})
     })
 
     it("createTable_alreadyExists", async () => {
