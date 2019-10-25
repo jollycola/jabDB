@@ -155,9 +155,13 @@ xdescribe("JabDB", () => {
         assert.isDefined(table);
     })
 
-    it("getTable_cached", () => {
+    xit("getTable_cached", async () => {
         // TODO: WRITE A NEW TEST, TESTING THE CACHING
-        db = new JabDB(new SingleFileAdapter(WRITABLE_PATH), {doCaching: true, cacheLifespan: 100000})
+        db = new JabDB(new SingleFileAdapter(WRITABLE_PATH), { doCaching: true, cacheLifespan: 100000 });
+        db.connect();
+
+        const table = await db.createTable("cacheTest");
+
     })
 
     it("createTable_alreadyExists", async () => {
@@ -168,7 +172,7 @@ xdescribe("JabDB", () => {
 })
 
 
-describe("JabTable", () => {
+describe.only("JabTable", () => {
 
     let table: JabTable<any>;
     let testItem: TestClass;
@@ -180,19 +184,30 @@ describe("JabTable", () => {
         testItem = new TestClass(1, "testitem");
         entry = new JabEntry("1", testItem);
 
-        map.set(entry.getId(), entry);
+        _.set(map, entry.getId(), entry);
 
         table = new JabTable("test_JabTable", map);
     })
 
     it("get", () => {
-        let obj = table.get(entry.getId());
+        const obj = table.get(entry.getId());
         assert.equal(obj, testItem);
     })
 
+    it("get_undefined", () => {
+        assert.isUndefined(table.get("__notexisting__"));
+    })
+
     it("find", () => {
-        let obj = table.find(v => v.string == testItem.string);
+        const obj = table.find(v => v.string == testItem.string);
         assert.equal(obj, testItem);
+    })
+
+    it("create", () => {
+        const obj = new TestClass(101);
+        assert.isUndefined(table.get("test_create"));
+        table.create(obj, "test_create");
+        assert.isDefined(table.get("test_create"));
     })
 
 });
