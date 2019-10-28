@@ -172,7 +172,7 @@ xdescribe("JabDB", () => {
 })
 
 
-describe.only("JabTable", () => {
+describe("JabTable", () => {
 
     let table: JabTable<any>;
     let testItem: TestClass;
@@ -199,8 +199,12 @@ describe.only("JabTable", () => {
     })
 
     it("find", () => {
-        const obj = table.find(v => v.string == testItem.string);
+        const obj = table.findFirst(v => v.string == testItem.string);
         assert.equal(obj, testItem);
+    })
+    
+    it("find_undefined", () => {
+        assert.isUndefined(table.findFirst(v=> v.string == "__notexisting__"))
     })
 
     it("create", () => {

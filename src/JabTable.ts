@@ -18,20 +18,27 @@ export default class JabTable<T> {
      * Returns the object with the specified id.
      * Returns `undefined` if entry does not exist.
      * @param id The id of the entry to get
+     * @returns The object of type [T], `undefined` if entry does not exist
      */
     public get(id: string): T {
-        if (_.has(this.entries, id))
+        if (_.has(this.entries, id)){
             return _.get(this.entries, id).getValue();
-        else
-            return undefined;
+        } else return undefined;
     }
 
-    public find(predicate: (v: T) => boolean): T {
-        // TODO: FIX THIS SHIT
-        console.log(
-        (_.find(this.entries, ((v: JabEntry<T>) => predicate(v.getValue()))) as JabEntry<T>)
-        );
-        return Array.from(this.entries.values()).find(v => predicate(v.getValue())).getValue();
+    public findFirst(predicate: (v: T) => boolean): T {
+        const value = _.find(this.entries, (v: JabEntry<T>) => predicate(v.getValue()))
+
+        if (value instanceof JabEntry) return value.getValue();
+
+        return undefined;
+    }
+
+    public findAll(predicate: (v: T) => boolean): T {
+
+        // TODO
+        throw Error("NOT YET IMPLEMENTED")
+
     }
 
     public create(entry: T, id?: string) {

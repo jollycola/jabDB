@@ -58,7 +58,7 @@ export default abstract class Adapter {
                         // Check if entry has an id and value field
                         if (entry.id != undefined && entry.value != undefined) {
                             const newEntry = new JabEntry<T>(entry.id, entry.value);
-                            entries.set(newEntry.getId(), newEntry);
+                            _.set(entries, newEntry.getId(), newEntry);
 
                         } else {
                             throw new MalformedSourceFileError("[MalformedSourceFileError]: Entry missing 'id' or 'value' field")
