@@ -1,16 +1,26 @@
 {
   "meta": {
-    "doCaching": false
   },
   "tables": {
     "test_table": {
-      "cacheTimestamp": -1,
       "name": "test_table",
       "entries": [
         {
           "id": "1",
           "value": {
             "number": 10,
+            "streng": "random string"
+          }
+        }
+      ]
+    },
+    "test_table2": {
+      "name": "test_table2",
+      "entries": [
+        {
+          "id": "1",
+          "value": {
+            "number": 11,
             "streng": "random string"
           }
         }

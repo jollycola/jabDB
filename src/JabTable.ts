@@ -1,17 +1,26 @@
 import JabEntry from "./JabEntry";
 import _ from "lodash";
 import { JabTableError } from "./errors";
+import JabDB from "./JabDB";
+import Adapter from "./adapters/Adapter";
 
-export default class JabTable<T> {
-    name: string;
+export default class JabTable {
+    private _name: string;
+    private adapter: Adapter;
+
     private _count = 0;
-    entries: Map<string, JabEntry<T>>;
 
-    cacheTimestamp: number = -1;
+    public get name(){
+        return this._name;
+    }
 
-    constructor(name: string, entries: Map<string, JabEntry<T>>) {
-        this.name = name;
-        this.entries = entries;
+    constructor(name: string, adapter: Adapter) {
+        this._name = name;
+        this.adapter = adapter;
+    }
+
+    get entries(): Map<string, JabEntry> {
+        return this.adapter.readTableEntries(this.name);
     }
 
     /**
@@ -20,28 +29,49 @@ export default class JabTable<T> {
      * @param id The id of the entry to get
      * @returns The object of type [T], `undefined` if entry does not exist
      */
-    public get(id: string): T {
-        if (_.has(this.entries, id)){
-            return _.get(this.entries, id).getValue();
+    public get(id: string): any {
+        const entries = this.entries;
+
+        if (_.has(entries, id)){
+            return _.get(entries, id).getValue();
         } else return undefined;
     }
 
-    public findFirst(predicate: (v: T) => boolean): T {
-        const value = _.find(this.entries, (v: JabEntry<T>) => predicate(v.getValue()))
+    /**
+     * Returns the first object matching the predicate
+     * @param predicate search predicate
+     * @returns The first object matching the predicate, `undefined` if entry does not exist
+     */
+    public findFirst<T>(predicate: (v: T) => boolean): T {
+        const value = _.find(this.entries, (v: JabEntry) => predicate(v.getValue()))
 
         if (value instanceof JabEntry) return value.getValue();
 
         return undefined;
     }
 
-    public findAll(predicate: (v: T) => boolean): T {
+    /**
+     * Returns all objects matching the predicate
+     * @param predicate search predicate
+     * @returns All objects matching the predicate as an array. Empty array if none was found
+     */
+    public findAll<T>(predicate: (v: T) => boolean): T[] {
+        const values = _.filter(this.entries, (v: JabEntry) => predicate(v.getValue()));
 
-        // TODO
-        throw Error("NOT YET IMPLEMENTED")
+        if (_.size(values) == 0) return [];
 
+        if (this.isJabEntries(values)){
+            return _.map(values, (entry) => {
+                return entry.getValue();
+            });
+        }
     }
 
-    public create(entry: T, id?: string) {
+    private isJabEntries(array: JabEntry[] | any[]): array is JabEntry[] {
+        return array[0] instanceof JabEntry;
+    }
+
+    public create(entry: any, id?: string): JabTable {
         if (!id) id = this.getNewId();
         else {
             if (_.has(this.entries, id)) 
@@ -50,6 +80,8 @@ export default class JabTable<T> {
         
         const newEntry = new JabEntry(id, entry);
         _.set(this.entries, newEntry.getId(), newEntry);
+
+        return this;
     }
 
     /**
