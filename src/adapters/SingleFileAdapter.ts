@@ -103,9 +103,9 @@ export class SingleFileAdapter extends Adapter {
     private async writeSource(database: Database): Promise<void> {
         return new Promise((resolve, reject) => {
 
-            const json = JSON.stringify(database);
+            const json = JSON.stringify(database, );
 
-            console.log("json: " + json)
+            //TODO Add json rewriter https://stackoverflow.com/a/56150320
 
             util.promisify(writeFile)(this.source, json, { flag: "w" })
                 .then(resolve)
@@ -126,13 +126,9 @@ export class SingleFileAdapter extends Adapter {
 
     public async saveTable(table: Table): Promise<void> {
         return new Promise(async (resolve, reject) => {
-            console.log("start")
             const data = await this.readSource();
-            console.log("data loaded")
-
 
             _.set(data.tables, table.name, table);
-
 
             this.writeSource(data)
                 .then(resolve)
