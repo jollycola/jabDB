@@ -15,6 +15,11 @@ const WRITABLE_PATH = "data/test/writable.json";
 const PREFILLED_PATH = "data/test/prefilled.json";
 
 
+function deleteWritableFile() {
+    fs.unlinkSync(WRITABLE_PATH);
+}
+
+
 describe("SingleFileAdapter", () => {
     let adapter: SingleFileAdapter;
 
@@ -56,7 +61,7 @@ describe("SingleFileAdapter", () => {
 
         expect(receivedTable).to.deep.eq(table);
 
-        fs.unlinkSync(WRITABLE_PATH);
+        deleteWritableFile();
     })
 
     it("saveTable_withEntry", async () => {
@@ -71,11 +76,11 @@ describe("SingleFileAdapter", () => {
 
         expect(receivedTable).to.deep.eq(table);
 
-        //fs.unlinkSync(WRITABLE_PATH);
+        deleteWritableFile();
     })
 
 
-    xit("removeTable", async () => {
+    it("removeTable", async () => {
         adapter = new SingleFileAdapter(WRITABLE_PATH)
         const jsonPrefilled = fs.readFileSync(PREFILLED_PATH).toString();
         fs.writeFileSync(WRITABLE_PATH, jsonPrefilled, { flag: "w" });
@@ -86,15 +91,25 @@ describe("SingleFileAdapter", () => {
 
         await expect(adapter.getTable("test_table2")).to.eventually.be.rejectedWith(JabDBError);
 
-        fs.unlinkSync(WRITABLE_PATH);
+        deleteWritableFile();
     })
 
 
 })
 
 
-describe("JabTable", () => {
+describe.only("JabTable", () => {
     let table: JabTable;
+
+    function useWritable() {
+
+        const adapter = new SingleFileAdapter(WRITABLE_PATH)
+        const jsonPrefilled = fs.readFileSync(PREFILLED_PATH).toString();
+        fs.writeFileSync(WRITABLE_PATH, jsonPrefilled, { flag: "w" });
+
+        table = new JabTable("test_table", adapter);
+
+    }
 
     beforeEach(() => {
         const adapter = new SingleFileAdapter(PREFILLED_PATH)
@@ -113,8 +128,66 @@ describe("JabTable", () => {
 
     it("findFirst", async () => {
         assert.isDefined(await table.findFirst<TestClass>((v) => v.string == "lorem"));
-
     })
+
+    it("findFirst_not_found", async () => {
+        expect(table.findFirst<TestClass>((v) => v.string == "__not_found__"))
+            .to.eventually.be.rejectedWith(JabTableError)
+    })
+
+    it("findAll_defined", async () => {
+        assert.isDefined(await table.findAll(v => v.string == "lorem"));
+    })
+
+    it("findAll_none", async () => {
+        expect((await table.findAll(v => v.string == "__notexisting__")).length).to.equal(0);
+    })
+
+    it("findAll_length", async () => {
+        expect((await table.findAll(v => v.string == "lorem")).length).to.equal(1);
+    })
+
+    it("findAll_two", async () => {
+        const expected = [new TestClass(2, "ipsum"), new TestClass(2, "ipsum")]
+
+        const found = await table.findAll(v => v.string == "ipsum");
+
+        expect(found).to.deep.eq(expected);
+    })
+
+    it("create", async () => {
+        useWritable();
+
+        const id = await table.create(new TestClass(5, "lorem ipsum"));
+
+        assert.isDefined(await table.get(id))
+
+        deleteWritableFile();
+    })
+
+    it("create_generated_id", async () => {
+        useWritable();
+
+        const id = await table.create(new TestClass(5, "lorem ipsum"));
+
+
+        assert.isDefined(await table.get(id))
+
+        deleteWritableFile();
+    })
+
+    it("create_generated_id_increments", async () => {
+        useWritable();
+
+        const id = await table.create(new TestClass(5, "lorem ipsum"));
+        const id2 = await table.create(new TestClass(5, "lorem ipsum"));
+
+        expect(Number.parseInt(id)).to.be.lessThan(Number.parseInt(id2))
+
+        deleteWritableFile();
+    })
+
+    //TODO: Test more of the create method
 
 })
 

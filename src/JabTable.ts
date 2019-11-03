@@ -2,13 +2,11 @@ import _, { Dictionary } from "lodash";
 import { JabTableError } from "./errors";
 import JabDB from "./JabDB";
 import Adapter from "./adapters/Adapter";
-import { Entry } from "./model";
+import { Entry, Table } from "./model";
 
 export default class JabTable {
     private _name: string;
     private adapter: Adapter;
-
-    private _count = 0;
 
     public get name() {
         return this._name;
@@ -20,8 +18,13 @@ export default class JabTable {
     }
 
     private async getEntries(): Promise<Dictionary<Entry>> {
-        return (await this.adapter.getTable(this._name)).entries;
+        return (await this.getTable()).entries;
     }
+
+    private async getTable(): Promise<Table> {
+        return (await this.adapter.getTable(this._name));
+    }
+
 
     /**
      * Returns the object with the specified id.
@@ -46,67 +49,86 @@ export default class JabTable {
      * @returns The first object matching the predicate.
      * @throws Throws a {@link JabTableError} if entry does not exist in table
      */
-    public async findFirst<T>(predicate: (v: T) => boolean): Promise<T> {
+    public async findFirst<T = any>(predicate: (v: T) => boolean): Promise<T> {
         const entries = await this.getEntries();
-
-        console.log(entries)
 
         return new Promise((resolve, reject) => {
             const value = _.find(entries, (v: Entry) => predicate(v.value))
 
-            console.log("value " + value)
+            if (value == undefined) reject(new JabTableError("No entry matching predicate found!"));
 
             if (Entry.isEntry(value))
                 resolve(value.value);
+            else
+                reject(new TypeError("Object returned was no of type 'Entry'"));
 
-            reject(new JabTableError("No entry matching predicate found!"));
         });
 
     }
 
-    // /**
-    //  * Returns all objects matching the predicate
-    //  * @param predicate search predicate
-    //  * @returns All objects matching the predicate as an array. Empty array if none was found
-    //  */
-    // public findAll<T>(predicate: (v: T) => boolean): T[] {
-    //     const values = _.filter(this.entries, (v: JabEntry) => predicate(v.getValue()));
+    /**
+     * Returns all objects matching the predicate
+     * @param predicate search predicate
+     * @returns All objects matching the predicate as an array. Empty array if none was found
+     */
+    public async findAll<T = any>(predicate: (v: T) => boolean): Promise<T[]> {
+        const entries = await this.getEntries();
 
-    //     if (_.size(values) == 0) return [];
+        return new Promise((resolve, reject) => {
+            const values = _.filter(entries, (v: Entry) => predicate(v.value));
 
-    //     if (this.isJabEntries(values)) {
-    //         return _.map(values, (entry) => {
-    //             return entry.getValue();
-    //         });
-    //     }
-    // }
+            if (_.size(values) == 0) resolve([]);
 
-    // private isJabEntries(array: JabEntry[] | any[]): array is JabEntry[] {
-    //     return array[0] instanceof JabEntry;
-    // }
+            if (this.isEntries(values)) {
+                resolve(_.map(values, (entry) => {
+                    return entry.value;
+                }));
+            }
+        })
+    }
 
-    // public create(entry: any, id?: string): JabTable {
-    //     if (!id) id = this.getNewId();
-    //     else {
-    //         if (_.has(this.entries, id))
-    //             throw new JabTableError("An entry with id '" + id + "' already exists in table!")
-    //     }
+    private isEntries(array: Entry[] | any[]): array is Entry[] {
+        return Entry.isEntry(array[0]);
+    }
 
-    //     const newEntry = new JabEntry(id, entry);
-    //     _.set(this.entries, newEntry.getId(), newEntry);
+    /**
+     * Create a new entry in the table
+     *
+     * @param {*} entry The object to insert
+     * @param {string} [id] the id of the object, a unique id is automatically created by default
+     * @returns {string} Returns the id of the entry
+     */
+    public async create(entry: any, id?: string): Promise<string> {
+        const table = await this.getTable();
 
-    //     return this;
-    // }
+        return new Promise(async (resolve, reject) => {
+            if (!id) {
+                id = await JabTable.getNewId(table);
+            }
 
-    // /**
-    //  * Returns a new ID based on the `this._count` field, 
-    //  * and increase `_count` by 1
-    //  */
-    // private getNewId(): string {
-    //     const val = this._count.toString();
-    //     this._count++;
+            while (_.has(table.entries, id)) {
+                console.warn("An entry with id '" + id + "' already exists in table! Generating new id")
+                id = await JabTable.getNewId(table);
+            }
 
-    //     return val;
-    // }
+            const newEntry = new Entry(id, entry);
+            _.set(table.entries, newEntry.id, newEntry);
+
+            this.adapter.saveTable(table)
+                .then((_) => resolve(newEntry.id))
+                .catch(reject)
+        });
+    }
+
+    /**
+     * Returns a new ID based on the `count` field on the table, 
+     * and increase `count` by 1
+     */
+    private static getNewId(table: Table): string {
+        const count = table.count.toString();
+        table.count++;
+
+        return count;
+    }
 
 }

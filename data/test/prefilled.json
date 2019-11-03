@@ -3,12 +3,16 @@
   "tables": {
     "test_table": {
       "name": "test_table",
+      "count": 4,
       "entries": {
-        "1": { "id": "1", "value": { "number": 1, "string": "lorem" } }
+        "1": { "id": "1", "value": { "number": 1, "string": "lorem" } },
+        "2": { "id": "2", "value": { "number": 2, "string": "ipsum" } },
+        "3": { "id": "3", "value": { "number": 2, "string": "ipsum" } }
       }
     },
     "test_table2": {
       "name": "test_table2",
+      "count": 2,
       "entries": {
         "1": { "id": "1", "value": { "number": 1, "string": "lorem" } }
       }

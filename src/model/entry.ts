@@ -8,10 +8,9 @@ export class Entry {
     }
 
     public static isEntry(object: any): object is Entry {
-
         return (
-            'name' in object && typeof object.name == "string" &&
-            'entries' in object && typeof object.value == "object")
+            'id' in object && typeof object.id === 'string' &&
+            'value' in object && typeof object.value === 'object')
 
     }
 }
