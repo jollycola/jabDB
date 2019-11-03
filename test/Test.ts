@@ -2,7 +2,7 @@ import chai, { assert, expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { SingleFileAdapter } from "../src/adapters"
 import _ from "lodash";
-import { JabDBError } from "../src/errors";
+import { JabDBError, JabTableError } from "../src/errors";
 import { Entry, Table } from "../src/model";
 import { before, Test } from "mocha";
 import JabTable from "../src/JabTable";
@@ -71,24 +71,50 @@ describe("SingleFileAdapter", () => {
 
         expect(receivedTable).to.deep.eq(table);
 
-        fs.unlinkSync(WRITABLE_PATH);
+        //fs.unlinkSync(WRITABLE_PATH);
     })
 
 
-    it("removeTable", async () => {
+    xit("removeTable", async () => {
         adapter = new SingleFileAdapter(WRITABLE_PATH)
-        const jsonPrefilled = fs.readFileSync("./data/test/prefilled.json").toString();
+        const jsonPrefilled = fs.readFileSync(PREFILLED_PATH).toString();
         fs.writeFileSync(WRITABLE_PATH, jsonPrefilled, { flag: "w" });
 
-        assert.isDefined(adapter.getTable("test_table2"));
+        assert.isDefined(await adapter.getTable("test_table2"));
 
         await adapter.deleteTable("test_table2");
 
-        expect(adapter.getTable("test_table2")).to.eventually.be.rejectedWith(JabDBError);
+        await expect(adapter.getTable("test_table2")).to.eventually.be.rejectedWith(JabDBError);
 
         fs.unlinkSync(WRITABLE_PATH);
     })
 
+
+})
+
+
+describe("JabTable", () => {
+    let table: JabTable;
+
+    beforeEach(() => {
+        const adapter = new SingleFileAdapter(PREFILLED_PATH)
+        adapter.connect();
+
+        table = new JabTable("test_table", adapter);
+    })
+
+    it("get", async () => {
+        assert.isDefined(await table.get("1"))
+    })
+
+    it("get_not_found", () => {
+        expect(table.get("__not_found__")).to.eventually.be.rejectedWith(JabTableError)
+    })
+
+    it("findFirst", async () => {
+        assert.isDefined(await table.findFirst<TestClass>((v) => v.string == "lorem"));
+
+    })
 
 })
 
