@@ -156,4 +156,20 @@ export class SingleFileAdapter extends Adapter {
         });
     }
 
+    public async deleteTable(id: string): Promise<void> {
+        return new Promise(async (resolve, reject) => {
+            const data = await this.readSource();
+
+            if (_.has(data.tables, id)) {
+                _.unset(data.tables, id);
+
+                this.writeSource(data)
+                    .then(resolve)
+                    .catch(reject);
+            } else {
+                reject(new JabDBError("No table found with id '" + id + "'"))
+            }
+
+        });
+    }
 }

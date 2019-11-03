@@ -14,5 +14,6 @@ export default abstract class Adapter {
 
     abstract getTable(id: string): Promise<Table>;
     abstract saveTable(table: Table): Promise<void>;
+    abstract deleteTable(id: string): Promise<void>;
 
 }

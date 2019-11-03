@@ -75,6 +75,21 @@ describe("SingleFileAdapter", () => {
     })
 
 
+    it("removeTable", async () => {
+        adapter = new SingleFileAdapter(WRITABLE_PATH)
+        const jsonPrefilled = fs.readFileSync("./data/test/prefilled.json").toString();
+        fs.writeFileSync(WRITABLE_PATH, jsonPrefilled, { flag: "w" });
+
+        assert.isDefined(adapter.getTable("test_table2"));
+
+        await adapter.deleteTable("test_table2");
+
+        expect(adapter.getTable("test_table2")).to.eventually.be.rejectedWith(JabDBError);
+
+        fs.unlinkSync(WRITABLE_PATH);
+    })
+
+
 })
 
 
