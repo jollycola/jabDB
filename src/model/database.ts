@@ -1,10 +1,11 @@
 import { Table, Meta } from ".";
+import { Dictionary } from "lodash";
+import _ from "lodash";
 
 export class Database {
 
     meta: Meta;
-    tables: Map<string, Table>;
-
+    tables: Dictionary<Table>;
 
     public static isDatabase(object: any): object is Database {
         return (

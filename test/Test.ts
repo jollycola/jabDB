@@ -4,8 +4,10 @@ import { SingleFileAdapter } from "../src/adapters"
 import _ from "lodash";
 import { JabDBError } from "../src/errors";
 import { Entry, Table } from "../src/model";
-import { before } from "mocha";
+import { before, Test } from "mocha";
 import JabTable from "../src/JabTable";
+import fs from "fs";
+import { WriteStream } from "tty";
 
 chai.use(chaiAsPromised);
 
@@ -48,8 +50,28 @@ describe("SingleFileAdapter", () => {
         adapter.connect();
 
         const table = new Table("table1")
+        await adapter.saveTable(table);
 
-        adapter.saveTable(table)
+        const receivedTable = await adapter.getTable(table.name);
+
+        expect(receivedTable).to.deep.eq(table);
+
+        fs.unlinkSync(WRITABLE_PATH);
+    })
+
+    it("saveTable_withEntry", async () => {
+        adapter = new SingleFileAdapter(WRITABLE_PATH)
+        adapter.connect();
+
+        const table = new Table("table1")
+        _.set(table.entries, "1", new Entry("1", new TestClass(1)))
+        await adapter.saveTable(table);
+
+        const receivedTable = await adapter.getTable(table.name);
+
+        expect(receivedTable).to.deep.eq(table);
+
+        fs.unlinkSync(WRITABLE_PATH);
     })
 
 

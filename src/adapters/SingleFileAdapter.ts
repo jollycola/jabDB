@@ -86,6 +86,9 @@ export class SingleFileAdapter extends Adapter {
         });
     }
 
+    /**
+     * Reads the source file and returns the data as a {@link Database} object
+     */
     private async readSource(): Promise<Database> {
         return new Promise<any>((resolve, reject) => {
             this.checkSource().then(async () => {
@@ -100,12 +103,20 @@ export class SingleFileAdapter extends Adapter {
         });
     }
 
+    /**
+     * Writes data to the source file
+     * @param database The data to write as a {@link Database} object
+     */
     private async writeSource(database: Database): Promise<void> {
         return new Promise((resolve, reject) => {
 
-            const json = JSON.stringify(database, );
+            // Convert the dictionaries to a plain object, so that JSON.stringify works
+            _.forEach(database.tables, (table) => {
+                table.entries = _.toPlainObject(table.entries);
+            })
+            database.tables = _.toPlainObject(database.tables)
 
-            //TODO Add json rewriter https://stackoverflow.com/a/56150320
+            const json = JSON.stringify(database);
 
             util.promisify(writeFile)(this.source, json, { flag: "w" })
                 .then(resolve)
@@ -114,6 +125,11 @@ export class SingleFileAdapter extends Adapter {
     }
 
 
+    /**
+     * Get a table from the database source
+     * @param id The id of the table to get
+     * @returns {Promise<Table>} The table as a {@link Table} object.
+     */
     public async getTable(id: string): Promise<Table> {
         const data = await this.readSource();
 
@@ -124,6 +140,10 @@ export class SingleFileAdapter extends Adapter {
         });
     }
 
+    /**
+     * Save a table to the database. If a table with the same id exists, it will be overridden.
+     * @param table The table to save in the database.
+     */
     public async saveTable(table: Table): Promise<void> {
         return new Promise(async (resolve, reject) => {
             const data = await this.readSource();
