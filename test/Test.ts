@@ -1,220 +1,259 @@
 import chai, { assert, expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import SingleFileAdapter from "../src/adapters/SingleFileAdapter";
-import JabTable from "../src/JabTable";
-import JabEntry from "../src/JabEntry";
-import { IOError } from "../src/errors";
-import JabDB, { JabDBMeta } from "../src/JabDB";
-import Adapter from "../src/adapters/Adapter";
-import fs from "fs";
+import { SingleFileAdapter } from "../src/adapters"
 import _ from "lodash";
+import { JabDBError, JabTableError } from "../src/errors";
+import { Entry, Table } from "../src/model";
+import { before, Test } from "mocha";
+import JabTable from "../src/JabTable";
+import fs from "fs";
+import { WriteStream } from "tty";
+import JabDB from "../src/JabDB";
 
 chai.use(chaiAsPromised);
 
-const WRITABLE_PATH = "data/test/writable.json";
-const PREFILLED_PATH = "data/test/prefilled.json";
+const WRITABLE_PATH = 'data/test/writable.json';
+const PREFILLED_PATH = 'data/test/prefilled.json';
+
+
+function deleteWritableFile() {
+    fs.unlinkSync(WRITABLE_PATH);
+}
+
 
 describe("SingleFileAdapter", () => {
     let adapter: SingleFileAdapter;
 
+    let entry1: Entry;
+    let entry2: Entry;
+
+    before(() => {
+        entry1 = { id: "1", value: new TestClass(1) };
+        entry2 = { id: "2", value: new TestClass(2) };
+    })
+
     beforeEach(() => {
-        adapter = new SingleFileAdapter(PREFILLED_PATH);
+        adapter = new SingleFileAdapter(PREFILLED_PATH, true);
+        adapter.connect();
     })
 
-    xit("test", () => {
-        const map = new Map<string, JabTable<any>>();
-        _.set(map, "test_table", new JabTable<any>("test_table", new Map<string, JabEntry<any>>()))
-        _.set(map, "test_table2", new JabTable<any>("test_table2", new Map<string, JabEntry<any>>()))
-
-        console.log(JSON.stringify(map));
+    it("connect", function () {
+        expect(adapter.connect()).to.eventually.not.be.rejectedWith(Error);
     })
 
-    it("adapter_badsource_throws", async () => {
-        adapter = new SingleFileAdapter("_nonexisting_file_.json");
-
-        await expect(adapter.readTable<TestClass>("test")).to.be.rejectedWith(IOError);
+    it("getTable_defined", async () => {
+        assert.isDefined(await adapter.getTable("test_table"))
     })
 
-    it("adapter_readMeta_defined", async () => {
-        const meta = await adapter.readMeta();
-        assert.isDefined(meta);
+    it("getTable_not_found", () => {
+        expect(adapter.getTable("__notexisting__")).to.eventually.be.rejectedWith(JabDBError);
     })
 
-    it("adapter_readMeta_type", async () => {
-        const meta = await adapter.readMeta();
-        assert.instanceOf(meta, JabDBMeta);
+    it("getTable_entries", async () => {
+        const entries = (await adapter.getTable("test_table")).entries;
+
+        expect(entries.size).to.not.eq(0);
     })
 
-    it("adapter_readTable_defined", async () => {
-        const table = await adapter.readTable<TestClass>("test_table");
-        assert.isDefined(table);
+    it("saveTable", async () => {
+        adapter = new SingleFileAdapter(WRITABLE_PATH)
+        adapter.connect();
+
+        const table = new Table("table1")
+        await adapter.saveTable(table);
+
+        const receivedTable = await adapter.getTable(table.name);
+
+        expect(receivedTable).to.deep.eq(table);
+
+        deleteWritableFile();
     })
 
-    it("adapter_readTable_entry_defined", async () => {
-        const table = await adapter.readTable<TestClass>("test_table");
-        const entry = table.get("1");
+    it("saveTable_withEntry", async () => {
+        adapter = new SingleFileAdapter(WRITABLE_PATH)
+        adapter.connect();
 
-        assert.isDefined(entry);
+        const table = new Table("table1")
+        _.set(table.entries, "1", new Entry("1", new TestClass(1)))
+        await adapter.saveTable(table);
+
+        const receivedTable = await adapter.getTable(table.name);
+
+        expect(receivedTable).to.deep.eq(table);
+
+        deleteWritableFile();
     })
 
-    it("adapter_readTable_entry_value", async () => {
-        const table = await adapter.readTable<TestClass>("test_table");
-        const entry = table.get("1");
 
-        assert.equal(entry.number, 10);
-    })
-
-    it("adapter_writeMeta", async () => {
-        adapter = new SingleFileAdapter(WRITABLE_PATH);
-        await adapter.connect();
-
-        const meta = new JabDBMeta(true, 1050);
-        await adapter.writeMeta(meta);
-
-        const data = await adapter.readMeta();
-        expect(data.doCaching).to.equal(true);
-        expect(data.cacheLifespan).to.equal(1050);
-
-        fs.unlinkSync(WRITABLE_PATH);
-    })
-
-    it("adapter_writeMeta_tablesNotNull", async () => {
-        adapter = new SingleFileAdapter("./data/test/writable.json");
-
-        const jsonPrefilled = fs.readFileSync("./data/test/prefilled.json").toString();
-        fs.writeFileSync("./data/test/writable.json", jsonPrefilled, { flag: "w" });
-
-        const meta = new JabDBMeta(true, 1050);
-        await adapter.writeMeta(meta);
-
-        const table = await adapter.readTable("test_table");
-        assert.isDefined(table);
-
-        fs.unlinkSync(WRITABLE_PATH);
-    })
-
-    it("adapter_writeTable", async () => {
-        adapter = new SingleFileAdapter(WRITABLE_PATH);
-        await adapter.connect();
-
-        const table = new JabTable<any>("writetable_test", new Map<string, JabEntry<any>>());
-        await adapter.writeTable(table);
-
-        expect(await adapter.readTable(table.name)).to.deep.equal(table);
-
-        fs.unlinkSync(WRITABLE_PATH);
-    })
-
-    it("adapter_writeTable_notempty", async () => {
-        adapter = new SingleFileAdapter(WRITABLE_PATH);
+    it("removeTable", async () => {
+        adapter = new SingleFileAdapter(WRITABLE_PATH)
         const jsonPrefilled = fs.readFileSync(PREFILLED_PATH).toString();
         fs.writeFileSync(WRITABLE_PATH, jsonPrefilled, { flag: "w" });
 
+        assert.isDefined(await adapter.getTable("test_table2"));
 
-        const readTable = await adapter.readTable("test_table");
+        await adapter.deleteTable("test_table2");
 
-        const testItem = new TestClass(100, "test_string");
-        readTable.entries.set("2", new JabEntry("2", testItem));
+        await expect(adapter.getTable("test_table2")).to.eventually.be.rejectedWith(JabDBError);
 
-        await adapter.writeTable(readTable);
-
-        const newTable = await adapter.readTable("test_table")
-
-        // expect(newTable.entries.size).to.equal(2);
-
-        fs.unlinkSync(WRITABLE_PATH);
+        deleteWritableFile();
     })
 
-    it("db_getTable", async () => {
-        const db = new JabDB(adapter);
-
-        const table = await db.getTable("test_table");
-
-        assert.isDefined(table);
-        assert.instanceOf(table, JabTable);
-    })
-
-    it("db_getTable_error", async () => {
-        const db = new JabDB(adapter);
-
-        expect(db.getTable("_nonexisting_table_")).to.be.rejectedWith(Error);
-    });
-
-});
-
-xdescribe("JabDB", () => {
-
-    let db: JabDB;
-
-    beforeEach(() => {
-        db = new JabDB(new TestingAdapter());
-    })
-
-    it("getTable_defined", () => {
-        const table = db.getTable("test1");
-        assert.isDefined(table);
-    })
-
-    xit("getTable_cached", async () => {
-        // TODO: WRITE A NEW TEST, TESTING THE CACHING
-        db = new JabDB(new SingleFileAdapter(WRITABLE_PATH), { doCaching: true, cacheLifespan: 100000 });
-        db.connect();
-
-        const table = await db.createTable("cacheTest");
-
-    })
-
-    it("createTable_alreadyExists", async () => {
-        const table = await db.createTable("test2");
-        assert.isDefined(table);
-    });
 
 })
 
 
 describe("JabTable", () => {
+    let table: JabTable;
 
-    let table: JabTable<any>;
-    let testItem: TestClass;
-    let entry: JabEntry<any>;
+    context("# Reading", () => {
+        before(() => {
+            const adapter = new SingleFileAdapter(PREFILLED_PATH)
+            adapter.connect();
+
+            table = new JabTable("test_table", adapter);
+        })
 
 
-    beforeEach(() => {
-        const map = new Map<string, JabEntry<any>>();
-        testItem = new TestClass(1, "testitem");
-        entry = new JabEntry("1", testItem);
+        it("get", async () => {
+            assert.isDefined(await table.get("1"))
+        })
 
-        _.set(map, entry.getId(), entry);
+        it("get_not_found", () => {
+            expect(table.get("__not_found__")).to.eventually.be.rejectedWith(JabTableError)
+        })
 
-        table = new JabTable("test_JabTable", map);
+        it("findFirst", async () => {
+            assert.isDefined(await table.findFirst<TestClass>((v) => v.string == "lorem"));
+        })
+
+        it("findFirst_not_found", async () => {
+            expect(table.findFirst<TestClass>((v) => v.string == "__not_found__"))
+                .to.eventually.be.rejectedWith(JabTableError)
+        })
+
+        it("findAll_defined", async () => {
+            assert.isDefined(await table.findAll(v => v.string == "lorem"));
+        })
+
+        it("findAll_none", async () => {
+            expect((await table.findAll(v => v.string == "__notexisting__")).length).to.equal(0);
+        })
+
+        it("findAll_length", async () => {
+            expect((await table.findAll(v => v.string == "lorem")).length).to.equal(1);
+        })
+
+        it("findAll_two", async () => {
+            const expected = [new TestClass(2, "ipsum"), new TestClass(2, "ipsum")]
+
+            const found = await table.findAll(v => v.string == "ipsum");
+
+            expect(found).to.deep.eq(expected);
+        })
+
     })
 
-    it("get", () => {
-        const obj = table.get(entry.getId());
-        assert.equal(obj, testItem);
+    context("# Writing", () => {
+
+        beforeEach(() => {
+            const adapter = new SingleFileAdapter(WRITABLE_PATH)
+            const jsonPrefilled = fs.readFileSync(PREFILLED_PATH).toString();
+            fs.writeFileSync(WRITABLE_PATH, jsonPrefilled, { flag: "w" });
+
+            table = new JabTable("test_table", adapter);
+        })
+
+        afterEach(() => {
+            deleteWritableFile();
+        })
+
+
+        it("create", async () => {
+            const id = await table.create(new TestClass(5, "lorem ipsum"));
+
+            assert.isDefined(await table.get(id))
+        })
+
+        it("create_generated_id", async () => {
+            const id = await table.create(new TestClass(5, "lorem ipsum"));
+
+            assert.isDefined(await table.get(id))
+        })
+
+        it("create_generated_id_increments", async () => {
+            const id = await table.create(new TestClass(5, "lorem ipsum"));
+            const id2 = await table.create(new TestClass(5, "lorem ipsum"));
+
+            expect(Number.parseInt(id)).to.be.lessThan(Number.parseInt(id2))
+        })
+
+        it("create_id_exists", async () => {
+            const id = await table.create(new TestClass(5, "lorem ipsum"), "3");
+
+            expect(Number.parseInt(id)).to.be.greaterThan(Number.parseInt("3"))
+        })
     })
 
-    it("get_undefined", () => {
-        assert.isUndefined(table.get("__notexisting__"));
+})
+
+
+describe("JabDB", () => {
+
+    let database: JabDB;
+
+    context("# Reading", () => {
+
+        before(async () => {
+            const adapter = new SingleFileAdapter(PREFILLED_PATH);
+            database = new JabDB(adapter);
+            await database.connect()
+        })
+
+        it("getTable", async () => {
+            assert.isDefined(await database.getTable("test_table"))
+        })
+
+        it("getTable_not_found", async () => {
+            expect(database.getTable("__not_found__")).to.eventually.be.rejectedWith(JabDBError);
+        })
     })
 
-    it("find", () => {
-        const obj = table.findFirst(v => v.string == testItem.string);
-        assert.equal(obj, testItem);
-    })
-    
-    it("find_undefined", () => {
-        assert.isUndefined(table.findFirst(v=> v.string == "__notexisting__"))
-    })
+    context("# Writing", () => {
 
-    it("create", () => {
-        const obj = new TestClass(101);
-        assert.isUndefined(table.get("test_create"));
-        table.create(obj, "test_create");
-        assert.isDefined(table.get("test_create"));
-    })
+        beforeEach(() => {
+            const adapter = new SingleFileAdapter(WRITABLE_PATH)
+            const jsonPrefilled = fs.readFileSync(PREFILLED_PATH).toString();
+            fs.writeFileSync(WRITABLE_PATH, jsonPrefilled, { flag: "w" });
 
-});
+            database = new JabDB(adapter);
+        })
+
+        afterEach(() => {
+            deleteWritableFile();
+        })
+
+        it("createTable", async () => {
+            await database.createTable("new_table");
+            assert.isDefined(await database.getTable("new_table"));
+        })
+
+        it("createTable_already_exists", async () => {
+            await expect(database.createTable("test_table", false)).to.eventually.be.rejectedWith(JabDBError);
+        })
+
+        it("createTable_already_exists_returnOld", async () => {
+            assert.isDefined(await database.createTable("test_table"));
+        })
+
+        it("createTable_already_exists_returnOld", async () => {
+            assert.isDefined(await database.createTable("test_table"));
+        })
+
+    })
+})
+
+
 
 class TestClass {
     number: number;
@@ -224,40 +263,4 @@ class TestClass {
         this.number = number;
         this.string = string;
     }
-}
-
-class TestingAdapter extends Adapter {
-    connect(): Promise<any> {
-        throw new Error("Method not implemented.");
-    }
-
-    public tables = new Map<string, JabTable<any>>();
-    public meta = new JabDBMeta(false);
-
-    constructor() {
-        super();
-        this.tables.set("test1", new JabTable("test1", new Map()));
-    }
-
-    async readMeta(): Promise<JabDBMeta> {
-        return this.meta;
-    }
-
-    async readTable(id: string): Promise<JabTable<any>> {
-        return this.tables.get(id);
-    }
-
-    writeMeta(meta: JabDBMeta): Promise<any> {
-        this.meta = meta;
-        return;
-    }
-    writeTable<T>(table: JabTable<T>): Promise<any> {
-        throw new Error("Method not implemented.");
-    }
-
-    write(): void {
-        throw new Error("Method not implemented.");
-    }
-
-
 }

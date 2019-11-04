@@ -90,11 +90,9 @@
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_adapters_adapter_.adapter.html#connect" class="tsd-kind-icon">connect</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-protected"><a href="_adapters_adapter_.adapter.html#plaintojabtables" class="tsd-kind-icon">plain<wbr>ToJab<wbr>Tables</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_adapters_adapter_.adapter.html#readmeta" class="tsd-kind-icon">read<wbr>Meta</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_adapters_adapter_.adapter.html#readtable" class="tsd-kind-icon">read<wbr>Table</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_adapters_adapter_.adapter.html#writemeta" class="tsd-kind-icon">write<wbr>Meta</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="_adapters_adapter_.adapter.html#writetable" class="tsd-kind-icon">write<wbr>Table</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_adapters_adapter_.adapter.html#deletetable" class="tsd-kind-icon">delete<wbr>Table</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_adapters_adapter_.adapter.html#gettable" class="tsd-kind-icon">get<wbr>Table</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_adapters_adapter_.adapter.html#savetable" class="tsd-kind-icon">save<wbr>Table</a></li>
 							</ul>
 						</section>
 					</div>
@@ -106,13 +104,13 @@
 					<a name="connect" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagAbstract">Abstract</span> connect</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">connect<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">connect<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/f306e0b/src/adapters/Adapter.ts#L11">adapters/Adapter.ts:11</a></li>
+									<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/75956b8/src/adapters/Adapter.ts#L8">adapters/Adapter.ts:8</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -120,180 +118,76 @@
 									<p>Connect to the database source</p>
 								</div>
 							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-protected">
-					<a name="plaintojabtables" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> plain<wbr>ToJab<wbr>Tables</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-protected">
-						<li class="tsd-signature tsd-kind-icon">plain<wbr>ToJab<wbr>Tables&lt;T&gt;<span class="tsd-signature-symbol">(</span>tables<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><a href="_jabtable_.jabtable.html" class="tsd-signature-type">JabTable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/f306e0b/src/adapters/Adapter.ts#L44">adapters/Adapter.ts:44</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Converts an array of plain objects into a map of JabTable objects mapped by their id</p>
-								</div>
-							</div>
-							<h4 class="tsd-type-parameters-title">Type parameters</h4>
-							<ul class="tsd-type-parameters">
-								<li>
-									<h4>T</h4>
-								</li>
-							</ul>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>tables: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>The array of plain objects</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><a href="_jabtable_.jabtable.html" class="tsd-signature-type">JabTable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="readmeta" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagAbstract">Abstract</span> read<wbr>Meta</h3>
+					<a name="deletetable" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagAbstract">Abstract</span> delete<wbr>Table</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">read<wbr>Meta<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_jabdb_.jabdbmeta.html" class="tsd-signature-type">JabDBMeta</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">delete<wbr>Table<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/f306e0b/src/adapters/Adapter.ts#L19">adapters/Adapter.ts:19</a></li>
+									<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/75956b8/src/adapters/Adapter.ts#L12">adapters/Adapter.ts:12</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Read the database metadata</p>
-								</div>
-								<dl class="tsd-comment-tags">
-									<dt>abstract</dt>
-									<dd></dd>
-									<dt>memberof</dt>
-									<dd><p>Adapter</p>
-									</dd>
-								</dl>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_jabdb_.jabdbmeta.html" class="tsd-signature-type">JabDBMeta</a><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="readtable" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagAbstract">Abstract</span> read<wbr>Table</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">read<wbr>Table<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_jabtable_.jabtable.html" class="tsd-signature-type">JabTable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/f306e0b/src/adapters/Adapter.ts#L33">adapters/Adapter.ts:33</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Read a table from the database</p>
-								</div>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>id: <span class="tsd-signature-type">string</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>The id of the table to read</p>
-									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_jabtable_.jabtable.html" class="tsd-signature-type">JabTable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
-							<p>Promise object represents the Table</p>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="writemeta" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagAbstract">Abstract</span> write<wbr>Meta</h3>
+					<a name="gettable" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagAbstract">Abstract</span> get<wbr>Table</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">write<wbr>Meta<span class="tsd-signature-symbol">(</span>meta<span class="tsd-signature-symbol">: </span><a href="_jabdb_.jabdbmeta.html" class="tsd-signature-type">JabDBMeta</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Table<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_model_table_.table.html" class="tsd-signature-type">Table</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/f306e0b/src/adapters/Adapter.ts#L27">adapters/Adapter.ts:27</a></li>
+									<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/75956b8/src/adapters/Adapter.ts#L10">adapters/Adapter.ts:10</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Write the database metadata to the database source</p>
-								</div>
-								<dl class="tsd-comment-tags">
-									<dt>abstract</dt>
-									<dd></dd>
-									<dt>memberof</dt>
-									<dd><p>Adapter</p>
-									</dd>
-								</dl>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>meta: <a href="_jabdb_.jabdbmeta.html" class="tsd-signature-type">JabDBMeta</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>The JabDBMeta object containing database metadata</p>
-									</div>
+									<h5>id: <span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_model_table_.table.html" class="tsd-signature-type">Table</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-					<a name="writetable" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagAbstract">Abstract</span> write<wbr>Table</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-						<li class="tsd-signature tsd-kind-icon">write<wbr>Table&lt;T&gt;<span class="tsd-signature-symbol">(</span>table<span class="tsd-signature-symbol">: </span><a href="_jabtable_.jabtable.html" class="tsd-signature-type">JabTable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="savetable" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagAbstract">Abstract</span> save<wbr>Table</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">save<wbr>Table<span class="tsd-signature-symbol">(</span>table<span class="tsd-signature-symbol">: </span><a href="_model_table_.table.html" class="tsd-signature-type">Table</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/f306e0b/src/adapters/Adapter.ts#L38">adapters/Adapter.ts:38</a></li>
+									<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/75956b8/src/adapters/Adapter.ts#L11">adapters/Adapter.ts:11</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Writes a table to the database source</p>
-								</div>
-							</div>
-							<h4 class="tsd-type-parameters-title">Type parameters</h4>
-							<ul class="tsd-type-parameters">
-								<li>
-									<h4>T</h4>
-								</li>
-							</ul>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>table: <a href="_jabtable_.jabtable.html" class="tsd-signature-type">JabTable</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>The table to write to the database source</p>
-									</div>
+									<h5>table: <a href="_model_table_.table.html" class="tsd-signature-type">Table</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -321,7 +215,25 @@
 						<a href="../modules/_adapters_singlefileadapter_.html">"adapters/<wbr>Single<wbr>File<wbr>Adapter"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
+						<a href="../modules/_adapters_index_.html">"adapters/index"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
 						<a href="../modules/_errors_index_.html">"errors/index"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_model_database_.html">"model/database"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_model_entry_.html">"model/entry"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_model_index_.html">"model/index"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_model_meta_.html">"model/meta"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_model_table_.html">"model/table"</a>
 					</li>
 				</ul>
 			</nav>
@@ -335,20 +247,14 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="_adapters_adapter_.adapter.html#connect" class="tsd-kind-icon">connect</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-protected">
-								<a href="_adapters_adapter_.adapter.html#plaintojabtables" class="tsd-kind-icon">plain<wbr>ToJab<wbr>Tables</a>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_adapters_adapter_.adapter.html#deletetable" class="tsd-kind-icon">delete<wbr>Table</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="_adapters_adapter_.adapter.html#readmeta" class="tsd-kind-icon">read<wbr>Meta</a>
+								<a href="_adapters_adapter_.adapter.html#gettable" class="tsd-kind-icon">get<wbr>Table</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="_adapters_adapter_.adapter.html#readtable" class="tsd-kind-icon">read<wbr>Table</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="_adapters_adapter_.adapter.html#writemeta" class="tsd-kind-icon">write<wbr>Meta</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-								<a href="_adapters_adapter_.adapter.html#writetable" class="tsd-kind-icon">write<wbr>Table</a>
+								<a href="_adapters_adapter_.adapter.html#savetable" class="tsd-kind-icon">save<wbr>Table</a>
 							</li>
 						</ul>
 					</li>

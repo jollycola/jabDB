@@ -1,13 +1,12 @@
-export default class JabEntry<T> {
+export default class JabEntry {
     private id: string;
-    private value: T;
+    private value: any;
 
-    constructor(id: string, value: T){
+    constructor(id: string, value: any){
         this.id = id;
         this.value = value;
     }
     
-
     getValue() {
         return this.value;
     }
