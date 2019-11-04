@@ -15,7 +15,7 @@
     "tslint": "tslint -p tsconfig.json",
     "build-and-test": "yarn build && yarn test",
     "test": "mocha -r ts-node/register test/**/*.ts",
-    "docs": "typedoc"
+    "docs": "typedoc --out docs --target es6 --theme minimal --mode file src"
   },
   "private": true,
   "dependencies": {
