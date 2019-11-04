@@ -21,9 +21,11 @@
   "dependencies": {
     "@types/chai-as-promised": "^7.1.2",
     "chai-as-promised": "^7.1.1",
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.15",
+    "typedoc-plugin-nojekyll": "^1.0.1"
   },
   "devDependencies": {
+    "@microsoft/tsdoc": "^0.12.14",
     "@types/chai": "^4.2.2",
     "@types/lodash": "^4.14.138",
     "@types/mocha": "^5.2.7",
