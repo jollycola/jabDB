@@ -103,12 +103,12 @@ export default class JabTable {
 
         return new Promise(async (resolve, reject) => {
             if (!id) {
-                id = await JabTable.getNewId(table);
+                id = JabTable.getNewId(table);
             }
 
             while (_.has(table.entries, id)) {
                 console.warn("An entry with id '" + id + "' already exists in table! Generating new id")
-                id = await JabTable.getNewId(table);
+                id = JabTable.getNewId(table);
             }
 
             const newEntry = new Entry(id, entry);

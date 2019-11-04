@@ -2,6 +2,8 @@ import Adapter from "./adapters/Adapter";
 import JabTable from "./JabTable";
 
 import _ from "lodash";
+import { JabDBError, JabTableNotFoundError } from "./errors";
+import { Table } from "./model";
 
 export default class JabDB {
     private adapter: Adapter;
@@ -17,61 +19,53 @@ export default class JabDB {
         }
     }
 
-    public async connect(): Promise<any> {
-        return new Promise((resolve, reject) => {
-            this.adapter.connect(this).then(resolve).catch(reject);
-        });
-    }
-
-    public get getMeta(): JabDBMeta {
-        return this.meta;
-    }
-
-    public get getAdapter(): Adapter {
-        return this.adapter;
+    public async connect(): Promise<void> {
+        return this.adapter.connect();
     }
 
     /**
      * Get a table from the database. 
      * @param id The id of the table to search for
-     * @returns {Promise<JabTable<any>>} The table found, as a promise. The promise is 
+     * @returns {Promise<JabTable>} The table found, as a promise. The promise is 
      * rejected if the table was not found
      */
-    public async getTable(id: string): Promise<JabTable> {,
-        throw Error("Not yet implemented");
-        // return new Promise(async (resolve, reject) => {
-        //     const tableName = await this.adapter.readTable(id);
-
-        //     if (tableName != undefined){
-        //         resolve(new JabTable(tableName, this.adapter));
-        //     } 
-        //     else reject(new Error("No table with id '" + id + "' exists"));
-        // });
+    public async getTable(id: string): Promise<JabTable> {
+        return new Promise(async (resolve, reject) => {
+            this.adapter.getTable(id)
+                .then(table => {
+                    resolve(new JabTable(table.name, this.adapter));
+                })
+                .catch(reject)
+        });
     }
 
-    // // TODO: Returning "Not yet implemented";
-    // public async createTable(id: string, returnIfAlreadyExists: boolean = true): Promise<JabTable> {
-    //     this.adapter.readTable(id).then((table: JabTable) => {
-    //         console.log(table);
+    /**
+     * Create a new table in the database
+     *
+     * @param {string} id The id of the table to create
+     * @param {boolean} [returnIfAlreadyExists=true] If `returnIfAlreadyExists` is set to `true`,
+     *  then the function returns the existing table, if it has the same id.
+     * @returns {Promise<JabTable>} Returns the table as a {@link JabTable} Promise.
+     * @memberof JabDB
+     */
+    public async createTable(id: string, returnIfAlreadyExists: boolean = true): Promise<JabTable> {
+        return new Promise((resolve, reject) => {
+            this.getTable(id).then((table) => {
+                if (returnIfAlreadyExists)
+                    resolve(table);
+                else
+                    reject(new JabDBError("Table with id '" + id + "' already exists!"))
+            }).catch(err => {
+                if (err instanceof JabTableNotFoundError) {
+                    this.adapter.saveTable(new Table(id))
+                        .then(() => resolve(new JabTable(id, this.adapter)))
+                        .catch(reject)
+                } else
+                    reject(err)
+            })
 
-    //         if (table != undefined) {
-    //             this.tables.set(table.Name, table);
-    //         }
-
-    //         if (this.tables.has(id)) {
-    //             if (returnIfAlreadyExists) {
-    //                 return this.tables.get(id);
-    //             } else {
-    //                 throw Error("Table with id '" + id + "' already exists!");
-    //             }
-    //         }
-    //     }).catch(err => {
-    //         throw err;
-    //     });
-
-
-    //     throw Error("Not yet implemented");
-    // }
+        })
+    }
 
 }
 

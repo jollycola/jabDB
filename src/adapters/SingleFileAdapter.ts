@@ -1,14 +1,11 @@
 import Adapter from "./Adapter";
-import JabDB from "../JabDB";
-import { MalformedSourceFileError, IOError, JabDBError } from "../errors";
+import { MalformedSourceFileError, IOError, JabTableNotFoundError } from "../errors";
 
 import { Database, Table } from "../model"
 
-import fs, { readFile, writeFile, write } from "fs";
-import util, { isUndefined } from "util";
+import fs, { readFile, writeFile } from "fs";
+import util from "util";
 import _ from "lodash";
-import { resolve } from "url";
-import { rejects } from "assert";
 
 /**
  * An adapter for JabDB that uses a single file as the source,
@@ -35,26 +32,31 @@ export class SingleFileAdapter extends Adapter {
     /** @inheritdoc */
     public async connect(): Promise<void> {
         return new Promise(async (resolve, reject) => {
+
             // Check if source exists
             if (fs.existsSync(this.source)) {
+
                 // Check source
-                this.checkSource().then(() => {
-                    util.promisify(readFile)(this.source).then(data => {
-                        const database = JSON.parse(data.toString())
+                this.checkSource()
+                    .then(() => {
+                        util.promisify(readFile)(this.source)
+                            .then(data => {
+                                const database = JSON.parse(data.toString())
 
-                        if (!Database.isDatabase(database)) {
-                            reject(new MalformedSourceFileError("Invalid source file, missing 'tables' or 'meta' field"))
-                        }
-
-                    }).catch(reject)
-                }).catch(reject);
+                                if (Database.isDatabase(database)) {
+                                    resolve()
+                                } else {
+                                    reject(new MalformedSourceFileError("Invalid source file, missing 'tables' or 'meta' field"))
+                                }
+                            })
+                            .catch(reject)
+                    })
+                    .catch(reject);
 
             } else {
-                fs.writeFile(this.source, JSON.stringify({ meta: {}, tables: [] }), (err) => {
-                    if (err) reject(err);
-
-                    resolve();
-                });
+                util.promisify(fs.writeFile)(this.source, JSON.stringify({ meta: {}, tables: [] }))
+                    .then(resolve)
+                    .catch(reject)
             }
         });
     }
@@ -67,7 +69,7 @@ export class SingleFileAdapter extends Adapter {
      * @memberof SingleFileAdapter
      */
     private async checkSource(): Promise<boolean> {
-        return new Promise<boolean>(async (resolve, reject) => {
+        return new Promise<boolean>((resolve, reject) => {
 
             if (this.requireJSONFile && !this.source.endsWith(".json")) {
                 reject(new MalformedSourceFileError("Source file is not a '.json' file!"))
@@ -136,7 +138,7 @@ export class SingleFileAdapter extends Adapter {
         return new Promise((resolve, reject) => {
             const table = _.get(data.tables, id) as Table;
             if (table) resolve(table)
-            else reject(new JabDBError("No table found with id '" + id + "'"))
+            else reject(new JabTableNotFoundError(id))
         });
     }
 
@@ -167,7 +169,7 @@ export class SingleFileAdapter extends Adapter {
                     .then(resolve)
                     .catch(reject);
             } else {
-                reject(new JabDBError("No table found with id '" + id + "'"))
+                reject(new JabTableNotFoundError(id))
             }
 
         });
