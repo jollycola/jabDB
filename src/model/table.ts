@@ -2,6 +2,9 @@ import { Entry } from ".";
 import { Dictionary } from "lodash";
 import _ from "lodash";
 
+/**
+ * @hidden
+ */
 export class Table {
     name: string;
     count: number;

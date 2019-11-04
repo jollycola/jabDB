@@ -1,5 +1,5 @@
 /**
- * @internal
+ * @hidden
  */
 export class Entry {
     id: string;

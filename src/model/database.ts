@@ -2,6 +2,9 @@ import { Table, Meta } from ".";
 import { Dictionary } from "lodash";
 import _ from "lodash";
 
+/**
+ * @hidden
+ */
 export class Database {
 
     meta: Meta;
@@ -9,7 +12,7 @@ export class Database {
 
     public static isDatabase(object: any): object is Database {
         return (
-            'meta' in object && 
+            'meta' in object &&
             'tables' in object);
     }
 }
