@@ -7,7 +7,6 @@ import { Entry, Table } from "../src/model";
 import { before, Test } from "mocha";
 import JabTable from "../src/JabTable";
 import fs from "fs";
-import { WriteStream } from "tty";
 import JabDB from "../src/JabDB";
 
 chai.use(chaiAsPromised);
@@ -105,6 +104,8 @@ describe("SingleFileAdapter", () => {
 
             await expect(adapter.getTable("test_table2")).to.eventually.be.rejectedWith(JabDBError);
         })
+
+        //TODO? More deleteTable tests?
 
 
     })

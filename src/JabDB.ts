@@ -67,6 +67,9 @@ export default class JabDB {
         })
     }
 
+
+    //TODO: Delete Table method
+
 }
 
 export class JabDBMeta {
