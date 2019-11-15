@@ -27,77 +27,90 @@ describe("SingleFileAdapter", () => {
     let entry1: Entry;
     let entry2: Entry;
 
-    before(() => {
-        entry1 = { id: "1", value: new TestClass(1) };
-        entry2 = { id: "2", value: new TestClass(2) };
+    context("# Reading", () => {
+
+        beforeEach(() => {
+            adapter = new SingleFileAdapter(PREFILLED_PATH, true);
+            adapter.connect();
+        })
+
+        before(() => {
+            entry1 = { id: "1", value: new TestClass(1) };
+            entry2 = { id: "2", value: new TestClass(2) };
+        })
+
+        it("connect", function () {
+            expect(adapter.connect()).to.eventually.not.be.rejectedWith(Error);
+        })
+
+        it("getTable_defined", async () => {
+            assert.isDefined(await adapter.getTable("test_table"))
+        })
+
+        it("getTable_not_found", () => {
+            expect(adapter.getTable("__notexisting__")).to.eventually.be.rejectedWith(JabDBError);
+        })
+
+        it("getTable_entries", async () => {
+            const entries = (await adapter.getTable("test_table")).entries;
+
+            expect(entries.size).to.not.eq(0);
+        })
+
+
     })
 
-    beforeEach(() => {
-        adapter = new SingleFileAdapter(PREFILLED_PATH, true);
-        adapter.connect();
-    })
+    context("# Writing", () => {
 
-    it("connect", function () {
-        expect(adapter.connect()).to.eventually.not.be.rejectedWith(Error);
-    })
+        let prefilledWritableAdapter: SingleFileAdapter;
 
-    it("getTable_defined", async () => {
-        assert.isDefined(await adapter.getTable("test_table"))
-    })
+        beforeEach(async () => {
+            adapter = new SingleFileAdapter(WRITABLE_PATH)
+            await adapter.connect()
+        })
 
-    it("getTable_not_found", () => {
-        expect(adapter.getTable("__notexisting__")).to.eventually.be.rejectedWith(JabDBError);
-    })
+        afterEach(() => {
+            deleteWritableFile();
+        })
 
-    it("getTable_entries", async () => {
-        const entries = (await adapter.getTable("test_table")).entries;
 
-        expect(entries.size).to.not.eq(0);
-    })
+        it("saveTable", async () => {
+            const table = new Table("table1")
+            await adapter.saveTable(table);
 
-    it("saveTable", async () => {
-        adapter = new SingleFileAdapter(WRITABLE_PATH)
-        adapter.connect();
+            const receivedTable = await adapter.getTable(table.name);
 
-        const table = new Table("table1")
-        await adapter.saveTable(table);
+            expect(receivedTable).to.deep.eq(table);
+        })
 
-        const receivedTable = await adapter.getTable(table.name);
+        it("saveTable_withEntry", async () => {
+            const table = new Table("table1")
+            _.set(table.entries, "1", new Entry("1", new TestClass(1)))
+            await adapter.saveTable(table);
 
-        expect(receivedTable).to.deep.eq(table);
+            const receivedTable = await adapter.getTable(table.name);
 
-        deleteWritableFile();
-    })
+            expect(receivedTable).to.deep.eq(table);
+        })
 
-    it("saveTable_withEntry", async () => {
-        adapter = new SingleFileAdapter(WRITABLE_PATH)
-        adapter.connect();
 
-        const table = new Table("table1")
-        _.set(table.entries, "1", new Entry("1", new TestClass(1)))
-        await adapter.saveTable(table);
+        it("removeTable", async () => {
+            adapter = new SingleFileAdapter(WRITABLE_PATH)
+            const jsonPrefilled = fs.readFileSync(PREFILLED_PATH).toString();
+            fs.writeFileSync(WRITABLE_PATH, jsonPrefilled, { flag: "w" });
 
-        const receivedTable = await adapter.getTable(table.name);
+            assert.isDefined(await adapter.getTable("test_table2"));
 
-        expect(receivedTable).to.deep.eq(table);
+            await adapter.deleteTable("test_table2");
 
-        deleteWritableFile();
+            await expect(adapter.getTable("test_table2")).to.eventually.be.rejectedWith(JabDBError);
+        })
+
+
     })
 
 
-    it("removeTable", async () => {
-        adapter = new SingleFileAdapter(WRITABLE_PATH)
-        const jsonPrefilled = fs.readFileSync(PREFILLED_PATH).toString();
-        fs.writeFileSync(WRITABLE_PATH, jsonPrefilled, { flag: "w" });
 
-        assert.isDefined(await adapter.getTable("test_table2"));
-
-        await adapter.deleteTable("test_table2");
-
-        await expect(adapter.getTable("test_table2")).to.eventually.be.rejectedWith(JabDBError);
-
-        deleteWritableFile();
-    })
 
 
 })
