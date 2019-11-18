@@ -24,9 +24,9 @@ export default class JabDB {
     }
 
     /**
-     * Get a table from the database. 
+     * Get a table from the database.
      * @param id The id of the table to search for
-     * @returns {Promise<JabTable>} The table found, as a promise. The promise is 
+     * @returns {Promise<JabTable>} The table found, as a promise. The promise is
      * rejected if the table was not found
      */
     public async getTable(id: string): Promise<JabTable> {
@@ -35,7 +35,7 @@ export default class JabDB {
                 .then(table => {
                     resolve(new JabTable(table.name, this.adapter));
                 })
-                .catch(reject)
+                .catch(reject);
         });
     }
 
@@ -54,21 +54,21 @@ export default class JabDB {
                 if (returnIfAlreadyExists)
                     resolve(table);
                 else
-                    reject(new JabDBError("Table with id '" + id + "' already exists!"))
+                    reject(new JabDBError("Table with id '" + id + "' already exists!"));
             }).catch(err => {
                 if (err instanceof JabTableNotFoundError) {
                     this.adapter.saveTable(new Table(id))
                         .then(() => resolve(new JabTable(id, this.adapter)))
-                        .catch(reject)
+                        .catch(reject);
                 } else
-                    reject(err)
-            })
+                    reject(err);
+            });
 
-        })
+        });
     }
 
 
-    //TODO: Delete Table method
+    // TODO: Delete Table method
 
 }
 
