@@ -1,4 +1,4 @@
-![](https://github.com/jollycola/jabDB/workflows/Node%20CI/badge.svg)
+![](https://github.com/jollycola/jabDB/workflows/Build/badge.svg)
 
 # jabDB
 
