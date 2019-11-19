@@ -98,7 +98,7 @@ export default class JabTable {
      * @param {string} [id] the id of the object, a unique id is automatically created by default
      * @returns {string} Returns the id of the entry
      */
-    public async create(entry: any, id?: string): Promise<string> {
+    public async createEntry(entry: any, id?: string): Promise<string> {
         const table = await this.getTable();
 
         return new Promise(async (resolve, reject) => {
@@ -116,7 +116,7 @@ export default class JabTable {
 
             this.adapter.saveTable(table)
                 .then((_) => resolve(newEntry.id))
-                .catch(reject)
+                .catch(reject);
         });
     }
 

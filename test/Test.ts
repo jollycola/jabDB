@@ -6,7 +6,7 @@ import { JabDBError, JabTableError, JabTableAlreadyExistsError } from "../src/er
 import { Entry, Table } from "../src/model";
 import { before, Test } from "mocha";
 import JabTable from "../src/JabTable";
-import fs from "fs";
+import fs, { existsSync } from "fs";
 import JabDB from "../src/JabDB";
 
 chai.use(chaiAsPromised);
@@ -184,26 +184,26 @@ describe("JabTable", () => {
 
 
         it("create", async () => {
-            const id = await table.create(new TestClass(5, "lorem ipsum"));
+            const id = await table.createEntry(new TestClass(5, "lorem ipsum"));
 
             assert.isDefined(await table.get(id))
         })
 
         it("create_generated_id", async () => {
-            const id = await table.create(new TestClass(5, "lorem ipsum"));
+            const id = await table.createEntry(new TestClass(5, "lorem ipsum"));
 
             assert.isDefined(await table.get(id))
         })
 
         it("create_generated_id_increments", async () => {
-            const id = await table.create(new TestClass(5, "lorem ipsum"));
-            const id2 = await table.create(new TestClass(5, "lorem ipsum"));
+            const id = await table.createEntry(new TestClass(5, "lorem ipsum"));
+            const id2 = await table.createEntry(new TestClass(5, "lorem ipsum"));
 
             expect(Number.parseInt(id)).to.be.lessThan(Number.parseInt(id2))
         })
 
         it("create_id_exists", async () => {
-            const id = await table.create(new TestClass(5, "lorem ipsum"), "3");
+            const id = await table.createEntry(new TestClass(5, "lorem ipsum"), "3");
 
             expect(Number.parseInt(id)).to.be.greaterThan(Number.parseInt("3"))
         })
@@ -266,6 +266,80 @@ describe("JabDB", () => {
 
     })
 })
+
+
+describe("Guide Tests", () => {
+
+    let adapter: SingleFileAdapter;
+    let db: JabDB;
+
+    beforeEach(async () => {
+
+        adapter = new SingleFileAdapter(WRITABLE_PATH);
+        db = new JabDB(adapter);
+
+        await db.connect()
+
+    })
+
+    afterEach(() => {
+        deleteWritableFile();
+    })
+
+
+    it("Creating database", async () => {
+        const adapter = new SingleFileAdapter(WRITABLE_PATH);
+        const db = new JabDB(adapter);
+
+        await db.connect()
+
+        expect(existsSync(WRITABLE_PATH)).to.eq(true);
+    })
+
+    it("Creating table", async () => {
+        const users = await db.createTable("users");
+
+        expect(users).to.exist
+            .and.be.instanceof(JabTable);
+    })
+
+    it("Getting table", async () => {
+        await db.createTable("users");
+
+        const users = await db.getTable("users")
+
+        expect(users).to.exist
+            .and.be.instanceof(JabTable);
+    })
+
+    it("Creating and getting entry", async () => {
+        const users = await db.createTable("users");
+        const expected = { name: "John Stone", age: 30 }
+
+        const id = await users.createEntry(expected);
+
+        const received = await users.get(id);
+
+        expect(received).to.deep.equal(expected);
+
+    })
+
+    it("Creating entry ids", async () => {
+        const users = await db.createTable("users");
+        const expected = { name: "John Stone", age: 30 }
+        const customID = "johnstone";
+
+        const id1 = await users.createEntry(expected);
+        const id2 = await users.createEntry(expected, customID);
+        const id3 = await users.createEntry(expected, customID);
+
+
+        expect(id1).to.equal("0");
+        expect(id2).to.equal("johnstone");
+        expect(id3).to.equal("1");
+    })
+
+});
 
 
 
