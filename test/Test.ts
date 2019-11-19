@@ -2,7 +2,7 @@ import chai, { assert, expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { SingleFileAdapter } from "../src/adapters"
 import _ from "lodash";
-import { JabDBError, JabTableError } from "../src/errors";
+import { JabDBError, JabTableError, JabTableAlreadyExistsError } from "../src/errors";
 import { Entry, Table } from "../src/model";
 import { before, Test } from "mocha";
 import JabTable from "../src/JabTable";
@@ -253,7 +253,7 @@ describe("JabDB", () => {
         })
 
         it("createTable_already_exists", async () => {
-            await expect(database.createTable("test_table", false)).to.eventually.be.rejectedWith(JabDBError);
+            await expect(database.createTable("test_table", false)).to.eventually.be.rejectedWith(JabTableAlreadyExistsError);
         })
 
         it("createTable_already_exists_returnOld", async () => {

@@ -35,11 +35,22 @@ export class JabTableNotFoundError extends JabDBError {
     /**
      * The id of the table that was not found
      * @type {string}
-     * @memberof JabTableNotFoundError
      */
     id: string;
 
     constructor(id: string) {
-        super("No table with id '" + id + "' found!")
+        super("No table with id '" + id + "' found!");
+    }
+}
+
+export class JabTableAlreadyExistsError extends JabDBError {
+    /**
+     * The id of the table that was not found
+     * @type {string}
+     */
+    id: string;
+
+    constructor(id: string) {
+        super("A table with id '" + id + "' already exists!!");
     }
 }

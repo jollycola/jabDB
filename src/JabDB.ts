@@ -2,7 +2,7 @@ import Adapter from "./adapters/Adapter";
 import JabTable from "./JabTable";
 
 import _ from "lodash";
-import { JabDBError, JabTableNotFoundError } from "./errors";
+import { JabDBError, JabTableNotFoundError, JabTableAlreadyExistsError } from "./errors";
 import { Table } from "./model";
 
 export default class JabDB {
@@ -54,7 +54,7 @@ export default class JabDB {
                 if (returnIfAlreadyExists)
                     resolve(table);
                 else
-                    reject(new JabDBError("Table with id '" + id + "' already exists!"));
+                    reject(new JabTableAlreadyExistsError(id));
             }).catch(err => {
                 if (err instanceof JabTableNotFoundError) {
                     this.adapter.saveTable(new Table(id))
@@ -68,7 +68,20 @@ export default class JabDB {
     }
 
 
-    // TODO: Delete Table method
+    /**
+     * Delete a table from the database
+     *
+     * @param {string} id the name/id of the table to delete
+     * @returns {Promise<void>}
+     * @memberof JabDB
+     */
+    public async deleteTable(id: string): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.adapter.deleteTable(id)
+                .then(resolve)
+                .catch(reject);
+        });
+    }
 
 }
 

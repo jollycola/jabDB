@@ -1,7 +1,7 @@
 import Adapter from "./Adapter";
 import { MalformedSourceFileError, IOError, JabTableNotFoundError } from "../errors";
 
-import { Database, Table } from "../model"
+import { Database, Table } from "../model";
 
 import fs, { readFile, writeFile } from "fs";
 import util from "util";
@@ -19,7 +19,7 @@ export class SingleFileAdapter extends Adapter {
     /**
      * Creates an instance of SingleFileAdapter.
      * @param {string} source The path of the source file
-     * @param {boolean} [requireJSONFile=true] Whether to require the file to 
+     * @param {boolean} [requireJSONFile=true] Whether to require the file to
      * be a .json file (``true`` by default)
      */
     constructor(source: string, requireJSONFile: boolean = true) {
@@ -41,22 +41,22 @@ export class SingleFileAdapter extends Adapter {
                     .then(() => {
                         util.promisify(readFile)(this.source)
                             .then(data => {
-                                const database = JSON.parse(data.toString())
+                                const database = JSON.parse(data.toString());
 
                                 if (Database.isDatabase(database)) {
-                                    resolve()
+                                    resolve();
                                 } else {
-                                    reject(new MalformedSourceFileError("Invalid source file, missing 'tables' or 'meta' field"))
+                                    reject(new MalformedSourceFileError("Invalid source file, missing 'tables' or 'meta' field"));
                                 }
                             })
-                            .catch(reject)
+                            .catch(reject);
                     })
                     .catch(reject);
 
             } else {
                 util.promisify(fs.writeFile)(this.source, JSON.stringify({ meta: {}, tables: [] }))
                     .then(resolve)
-                    .catch(reject)
+                    .catch(reject);
             }
         });
     }
@@ -72,7 +72,7 @@ export class SingleFileAdapter extends Adapter {
         return new Promise<boolean>((resolve, reject) => {
 
             if (this.requireJSONFile && !this.source.endsWith(".json")) {
-                reject(new MalformedSourceFileError("Source file is not a '.json' file!"))
+                reject(new MalformedSourceFileError("Source file is not a '.json' file!"));
             }
 
             if (fs.existsSync(this.source)) {
@@ -97,7 +97,7 @@ export class SingleFileAdapter extends Adapter {
                 const data = JSON.parse((await util.promisify(readFile)(this.source)).toString());
 
                 if (Database.isDatabase(data)) resolve(data);
-                else reject(new MalformedSourceFileError("Invalid source file, missing 'tables' or 'meta' field"))
+                else reject(new MalformedSourceFileError("Invalid source file, missing 'tables' or 'meta' field"));
 
             }).catch(err => {
                 reject(err);
@@ -115,15 +115,15 @@ export class SingleFileAdapter extends Adapter {
             // Convert the dictionaries to a plain object, so that JSON.stringify works
             _.forEach(database.tables, (table) => {
                 table.entries = _.toPlainObject(table.entries);
-            })
-            database.tables = _.toPlainObject(database.tables)
+            });
+            database.tables = _.toPlainObject(database.tables);
 
             const json = JSON.stringify(database);
 
             util.promisify(writeFile)(this.source, json, { flag: "w" })
                 .then(resolve)
                 .catch(reject);
-        })
+        });
     }
 
 
@@ -137,8 +137,8 @@ export class SingleFileAdapter extends Adapter {
 
         return new Promise((resolve, reject) => {
             const table = _.get(data.tables, id) as Table;
-            if (table) resolve(table)
-            else reject(new JabTableNotFoundError(id))
+            if (table) resolve(table);
+            else reject(new JabTableNotFoundError(id));
         });
     }
 
@@ -169,7 +169,7 @@ export class SingleFileAdapter extends Adapter {
                     .then(resolve)
                     .catch(reject);
             } else {
-                reject(new JabTableNotFoundError(id))
+                reject(new JabTableNotFoundError(id));
             }
 
         });
