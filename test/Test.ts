@@ -232,10 +232,22 @@ describe("JabTable", () => {
             const received = await table.get(id);
 
             expect(received).to.exist
-                .and.not.deep.equal(notExpected)
-                .and.deep.equal(expected);
+                .and.to.deep.equal(expected)
+                .and.not.deep.equal(notExpected);
 
         })
+
+        it("patch", async () => {
+            const old = { "number": 1, "string": "lorem" };
+            const expected = { "number": 5, "string": "patch" };
+
+            await table.patch("1", { "number": 5 }, { "string": "patch" });
+
+            expect(await table.get("1")).to.deep.equal(expected);
+        })
+
+        // TODO patch and patchWith tests
+
     })
 
 })

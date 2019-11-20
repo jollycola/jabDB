@@ -4,6 +4,7 @@ import JabDB from "./JabDB";
 import Adapter from "./adapters/Adapter";
 import { Entry, Table } from "./model";
 import JabEntry from "./JabEntry";
+import { rejects } from "assert";
 
 export default class JabTable {
     private _name: string;
@@ -148,12 +149,46 @@ export default class JabTable {
             const table = await this.getTable();
             _.set(table.entries, id, new Entry(id, entry));
 
-            console.log(table.entries)
-
             this.adapter.saveTable(table)
                 .then(resolve)
                 .then(reject);
         });
     }
+
+    /**
+     * Patch an entry in the table, this updates the fields
+     * TODO: Write Doc
+     * @see https://lodash.com/docs/#assignIn
+     */
+    public patch(id: string, ...changes: any): Promise<any> {
+        return this.patchWith(id, undefined, ...changes);
+    }
+
+    /**
+     * Patch an entry in the table, this updates the fields
+     * TODO: Write Doc
+     * @see https://lodash.com/docs/#assignInWith
+     */
+    public patchWith(id: string, customizer: _.AssignCustomizer, ...changes: any): Promise<any> {
+        return new Promise(async (resolve, reject) => {
+            const table = await this.getTable();
+
+            if (_.has(table.entries, id)) {
+                let obj = _.get(table.entries, id).value;
+                obj = _.assignInWith(obj, customizer, ...changes);
+
+                _.set(table.entries, id, new Entry(id, obj));
+
+                this.adapter.saveTable(table)
+                    .then(() => resolve(obj))
+                    .catch(reject);
+
+            } else {
+                reject(new EntryNotFoundError(id));
+            }
+        });
+
+    }
+
 
 }
