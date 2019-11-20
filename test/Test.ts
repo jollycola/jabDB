@@ -207,6 +207,35 @@ describe("JabTable", () => {
 
             expect(Number.parseInt(id)).to.be.greaterThan(Number.parseInt("3"))
         })
+
+        it("put", async () => {
+            const expected = new TestClass(1, "lorem ipsum");
+            const id = "put_test";
+            await table.put(id, expected);
+
+            const received = await table.get(id);
+
+            expect(received).to.exist
+                .and.deep.equal(expected);
+        })
+
+        it("put_override", async () => {
+
+            const notExpected = new TestClass(-5, "not expected");
+            const expected = new TestClass(1, "lorem ipsum");
+            const id = await table.createEntry(notExpected);
+
+            console.log("ID: " + id)
+
+            await table.put(id, expected);
+
+            const received = await table.get(id);
+
+            expect(received).to.exist
+                .and.not.deep.equal(notExpected)
+                .and.deep.equal(expected);
+
+        })
     })
 
 })

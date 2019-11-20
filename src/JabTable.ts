@@ -1,8 +1,9 @@
 import _, { Dictionary } from "lodash";
-import { JabTableError } from "./errors";
+import { JabTableError, EntryNotFoundError } from "./errors";
 import JabDB from "./JabDB";
 import Adapter from "./adapters/Adapter";
 import { Entry, Table } from "./model";
+import JabEntry from "./JabEntry";
 
 export default class JabTable {
     private _name: string;
@@ -39,7 +40,7 @@ export default class JabTable {
             if (_.has(entries, id)) {
                 resolve(_.get(entries, id).value);
             } else
-                reject(new JabTableError("No entry with id '" + id + "' found!"))
+                reject(new JabTableError("No entry with id '" + id + "' found!"));
         });
     }
 
@@ -53,7 +54,7 @@ export default class JabTable {
         const entries = await this.getEntries();
 
         return new Promise((resolve, reject) => {
-            const value = _.find(entries, (v: Entry) => predicate(v.value))
+            const value = _.find(entries, (v: Entry) => predicate(v.value));
 
             if (value == undefined) reject(new JabTableError("No entry matching predicate found!"));
 
@@ -72,19 +73,21 @@ export default class JabTable {
      * @returns All objects matching the predicate as an array. Empty array if none was found
      */
     public async findAll<T = any>(predicate: (v: T) => boolean): Promise<T[]> {
-        const entries = await this.getEntries();
+        return new Promise(async (resolve, reject) => {
+            const entries = await this.getEntries();
 
-        return new Promise((resolve, reject) => {
             const values = _.filter(entries, (v: Entry) => predicate(v.value));
 
-            if (_.size(values) == 0) resolve([]);
-
-            if (this.isEntries(values)) {
-                resolve(_.map(values, (entry) => {
-                    return entry.value;
-                }));
+            if (_.size(values) == 0) {
+                resolve([]);
+            } else {
+                if (this.isEntries(values)) {
+                    resolve(_.map(values, (entry) => {
+                        return entry.value;
+                    }));
+                }
             }
-        })
+        });
     }
 
     private isEntries(array: Entry[] | any[]): array is Entry[] {
@@ -99,15 +102,15 @@ export default class JabTable {
      * @returns {string} Returns the id of the entry
      */
     public async createEntry(entry: any, id?: string): Promise<string> {
-        const table = await this.getTable();
-
         return new Promise(async (resolve, reject) => {
+            const table = await this.getTable();
+
             if (!id) {
                 id = JabTable.getNewId(table);
             }
 
             while (_.has(table.entries, id)) {
-                console.warn("An entry with id '" + id + "' already exists in table! Generating new id")
+                console.warn("An entry with id '" + id + "' already exists in table! Generating new id");
                 id = JabTable.getNewId(table);
             }
 
@@ -121,7 +124,7 @@ export default class JabTable {
     }
 
     /**
-     * Returns a new ID based on the `count` field on the table, 
+     * Returns a new ID based on the `count` field on the table,
      * and increase `count` by 1
      */
     private static getNewId(table: Table): string {
@@ -129,6 +132,28 @@ export default class JabTable {
         table.count++;
 
         return count;
+    }
+
+
+    /**
+     * Put an entry into the table.
+     * If any entry with the same id already exists, it its overridden.
+     *
+     * @param {string} id the id of the entry
+     * @param {*} entry the object to put in the table
+     * @returns {Promise<void>}
+     */
+    public async put(id: string, entry: any): Promise<void> {
+        return new Promise(async (resolve, reject) => {
+            const table = await this.getTable();
+            _.set(table.entries, id, new Entry(id, entry));
+
+            console.log(table.entries)
+
+            this.adapter.saveTable(table)
+                .then(resolve)
+                .then(reject);
+        });
     }
 
 }
