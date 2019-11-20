@@ -20,6 +20,23 @@ export class IOError extends Error { }
 export class JabTableError extends Error { }
 
 /**
+ * Thrown when searhing for an id that does not exist in table
+ * @category JabError
+ * @extends {JabTableError}
+ */
+export class EntryNotFoundError extends JabTableError {
+    /**
+     * The id of the entry that was not found
+     * @type {string}
+     */
+    id: string;
+
+    constructor(id: string) {
+        super("No entry with id '" + id + "' found!");
+    }
+}
+
+/**
  * Thrown when an error has happened in a JabDB
  * @category JabError
  * @extends {Error}
