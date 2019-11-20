@@ -9,14 +9,16 @@ jobs:
 
     - name: Use Node.js
       uses: actions/setup-node@v1
-    
-    - name: Install Typedoc
-      with:
-        cmd: npm install typedoc
         
-    - name: Build Docs 
-      with:
-        cmd: npm run docs
+    - name: Install Typedoc
+      run: npm install typedoc
+      env:
+        CI: true
+        
+    - name: Build Docs
+      run: npm run docs
+      env:
+        CI: true
 
     - name: Build and Deploy
       uses: JamesIves/github-pages-deploy-action@releases/v3
