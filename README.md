@@ -59,14 +59,6 @@ const id2 = await users.createEntry(
 // id2 -> "johnstone" if it is available else next available id
 ```
 
-```typescript
-const id = await users.createEntry({ name: "John Stone", age: 30 });
-const id = await users.createEntry(
-  { name: "John Stone", age: 30 },
-  "johnstone"
-);
-```
-
 ### Getting object by its id
 
 ```typescript
