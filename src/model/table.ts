@@ -23,8 +23,8 @@ export class Table {
 
     public static isTable(object: any): object is Table {
         return (
-            'name' in object && typeof object.name === 'string' &&
-            'count' in object && typeof object.cound === 'number' &&
-            'entries' in object && typeof object.entries === 'object')
+            "name" in object && typeof object.name === "string" &&
+            "count" in object && typeof object.cound === "number" &&
+            "entries" in object && typeof object.entries === "object");
     }
 }

@@ -12,8 +12,8 @@ export class Entry {
 
     public static isEntry(object: any): object is Entry {
         return (
-            'id' in object && typeof object.id === 'string' &&
-            'value' in object && typeof object.value === 'object')
+            "id" in object && typeof object.id === "string" &&
+            "value" in object && typeof object.value === "object");
 
     }
 }
