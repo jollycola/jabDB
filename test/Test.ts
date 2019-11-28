@@ -2,7 +2,7 @@ import chai, { assert, expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { SingleFileAdapter } from "../src/adapters"
 import _ from "lodash";
-import { JabDBError, JabTableError, JabTableAlreadyExistsError } from "../src/errors";
+import { JabDBError, JabTableError, JabTableAlreadyExistsError, EntryNotFoundError } from "../src/errors";
 import { Entry, Table } from "../src/model";
 import { before, Test } from "mocha";
 import JabTable from "../src/JabTable";
@@ -184,26 +184,26 @@ describe("JabTable", () => {
 
 
         it("create", async () => {
-            const id = await table.createEntry(new TestClass(5, "lorem ipsum"));
+            const id = await table.create(new TestClass(5, "lorem ipsum"));
 
             assert.isDefined(await table.get(id))
         })
 
         it("create_generated_id", async () => {
-            const id = await table.createEntry(new TestClass(5, "lorem ipsum"));
+            const id = await table.create(new TestClass(5, "lorem ipsum"));
 
             assert.isDefined(await table.get(id))
         })
 
         it("create_generated_id_increments", async () => {
-            const id = await table.createEntry(new TestClass(5, "lorem ipsum"));
-            const id2 = await table.createEntry(new TestClass(5, "lorem ipsum"));
+            const id = await table.create(new TestClass(5, "lorem ipsum"));
+            const id2 = await table.create(new TestClass(5, "lorem ipsum"));
 
             expect(Number.parseInt(id)).to.be.lessThan(Number.parseInt(id2))
         })
 
         it("create_id_exists", async () => {
-            const id = await table.createEntry(new TestClass(5, "lorem ipsum"), "3");
+            const id = await table.create(new TestClass(5, "lorem ipsum"), "3");
 
             expect(Number.parseInt(id)).to.be.greaterThan(Number.parseInt("3"))
         })
@@ -223,7 +223,7 @@ describe("JabTable", () => {
 
             const notExpected = new TestClass(-5, "not expected");
             const expected = new TestClass(1, "lorem ipsum");
-            const id = await table.createEntry(notExpected);
+            const id = await table.create(notExpected);
 
             console.log("ID: " + id)
 
@@ -241,9 +241,34 @@ describe("JabTable", () => {
             const old = { "number": 1, "string": "lorem" };
             const expected = { "number": 5, "string": "patch" };
 
+            await table.patch("1", { "number": 5, "string": "patch" });
+
+            expect(await table.get("1")).to.deep.equal(expected);
+        })
+
+        it("patch_multiple_changes", async () => {
+            const old = { "number": 1, "string": "lorem" };
+            const expected = { "number": 5, "string": "patch" };
+
             await table.patch("1", { "number": 5 }, { "string": "patch" });
 
             expect(await table.get("1")).to.deep.equal(expected);
+        })
+
+        it("patch_not_found", async () => {
+            await expect(table.patch("__not__found__", { "string": "patch" }))
+                .to.be.rejectedWith(EntryNotFoundError);
+        })
+
+        it.only("patchWith", async () => {
+            const id = await table.create({ 'a': 1 });
+
+            await table.patchWith(id, (objVal, srcVal) => {
+                console.log("running")
+                return objVal == undefined ? srcVal : objVal;
+            }, { 'b': 2 }, { 'a': 3 });
+
+            expect(await table.get(id)).to.deep.equal({ 'a': 1, 'b': 2 });
         })
 
         // TODO patch and patchWith tests
@@ -357,7 +382,7 @@ describe("Guide Tests", () => {
         const users = await db.createTable("users");
         const expected = { name: "John Stone", age: 30 }
 
-        const id = await users.createEntry(expected);
+        const id = await users.create(expected);
 
         const received = await users.get(id);
 
@@ -370,9 +395,9 @@ describe("Guide Tests", () => {
         const expected = { name: "John Stone", age: 30 }
         const customID = "johnstone";
 
-        const id1 = await users.createEntry(expected);
-        const id2 = await users.createEntry(expected, customID);
-        const id3 = await users.createEntry(expected, customID);
+        const id1 = await users.create(expected);
+        const id2 = await users.create(expected, customID);
+        const id3 = await users.create(expected, customID);
 
 
         expect(id1).to.equal("0");

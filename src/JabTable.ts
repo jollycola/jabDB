@@ -102,7 +102,7 @@ export default class JabTable {
      * @param {string} [id] the id of the object, a unique id is automatically created by default
      * @returns {string} Returns the id of the entry
      */
-    public async createEntry(entry: any, id?: string): Promise<string> {
+    public async create(entry: any, id?: string): Promise<string> {
         return new Promise(async (resolve, reject) => {
             const table = await this.getTable();
 
@@ -161,7 +161,11 @@ export default class JabTable {
      * @see https://lodash.com/docs/#assignIn
      */
     public patch(id: string, ...changes: any): Promise<any> {
-        return this.patchWith(id, undefined, ...changes);
+        return new Promise(async (resolve, reject) => {
+            this.patchWith(id, undefined, ...changes)
+                .then(resolve)
+                .catch(reject);
+        });
     }
 
     /**
@@ -175,7 +179,9 @@ export default class JabTable {
 
             if (_.has(table.entries, id)) {
                 let obj = _.get(table.entries, id).value;
-                obj = _.assignInWith(obj, customizer, ...changes);
+
+                // FIXME _.assignInWith not using the customizer
+                obj = _.assignInWith(obj, ...changes, customizer);
 
                 _.set(table.entries, id, new Entry(id, obj));
 
