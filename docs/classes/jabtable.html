@@ -2416,6 +2416,9 @@ img {
 				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="jabtable.html#create" class="tsd-kind-icon">create</a>
 				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="jabtable.html#delete" class="tsd-kind-icon">delete</a>
+				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
 					<a href="jabtable.html#findall" class="tsd-kind-icon">find<wbr>All</a>
 				</li>
@@ -2502,6 +2505,7 @@ img {
 						<h3>Methods</h3>
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="jabtable.html#create" class="tsd-kind-icon">create</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="jabtable.html#delete" class="tsd-kind-icon">delete</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="jabtable.html#findall" class="tsd-kind-icon">find<wbr>All</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="jabtable.html#findfirst" class="tsd-kind-icon">find<wbr>First</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="jabtable.html#get" class="tsd-kind-icon">get</a></li>
@@ -2529,7 +2533,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/a16a98b/src/JabTable.ts#L15">JabTable.ts:15</a></li>
+								<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/7925ecc/src/JabTable.ts#L15">JabTable.ts:15</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2554,7 +2558,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">_name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/a16a98b/src/JabTable.ts#L10">JabTable.ts:10</a></li>
+						<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/7925ecc/src/JabTable.ts#L10">JabTable.ts:10</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2564,7 +2568,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">adapter<span class="tsd-signature-symbol">:</span> <a href="adapter.html" class="tsd-signature-type">Adapter</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/a16a98b/src/JabTable.ts#L11">JabTable.ts:11</a></li>
+						<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/7925ecc/src/JabTable.ts#L11">JabTable.ts:11</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2577,7 +2581,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> </div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/a16a98b/src/JabTable.ts#L13">JabTable.ts:13</a></li>
+						<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/7925ecc/src/JabTable.ts#L13">JabTable.ts:13</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2594,7 +2598,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/a16a98b/src/JabTable.ts#L105">JabTable.ts:105</a></li>
+								<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/7925ecc/src/JabTable.ts#L114">JabTable.ts:114</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2619,6 +2623,37 @@ img {
 					</li>
 				</ul>
 			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="delete" class="tsd-anchor"></a>
+				<h3>delete</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">delete<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/7925ecc/src/JabTable.ts#L220">JabTable.ts:220</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Delete an entry from the table by its id</p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>id: <span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>The id of the entry to remove</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
+			</section>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
 				<a name="findall" class="tsd-anchor"></a>
 				<h3>find<wbr>All</h3>
@@ -2629,7 +2664,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/a16a98b/src/JabTable.ts#L76">JabTable.ts:76</a></li>
+								<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/7925ecc/src/JabTable.ts#L85">JabTable.ts:85</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2679,13 +2714,13 @@ img {
 				<a name="findfirst" class="tsd-anchor"></a>
 				<h3>find<wbr>First</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-					<li class="tsd-signature tsd-kind-icon">find<wbr>First&lt;T&gt;<span class="tsd-signature-symbol">(</span>predicate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">find<wbr>First&lt;T&gt;<span class="tsd-signature-symbol">(</span>predicate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span>, returnUndefined<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/a16a98b/src/JabTable.ts#L54">JabTable.ts:54</a></li>
+								<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/7925ecc/src/JabTable.ts#L60">JabTable.ts:60</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2730,6 +2765,13 @@ img {
 									</li>
 								</ul>
 							</li>
+							<li>
+								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> returnUndefined: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;false</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>if <code>true</code>, returns <code>undefined</code> instead of throwing exception if no entries found
+									(<code>true</code> by default)</p>
+								</div>
+							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						<p>The first object matching the predicate.</p>
@@ -2740,13 +2782,13 @@ img {
 				<a name="get" class="tsd-anchor"></a>
 				<h3>get</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">get<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">get<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, returnUndefined<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/a16a98b/src/JabTable.ts#L37">JabTable.ts:37</a></li>
+								<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/7925ecc/src/JabTable.ts#L39">JabTable.ts:39</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2767,6 +2809,13 @@ img {
 									<p>The id of the entry to get</p>
 								</div>
 							</li>
+							<li>
+								<h5><span class="tsd-flag ts-flagDefault value">Default value</span> returnUndefined: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;false</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>if <code>true</code>, returns <code>undefined</code> instead of throwing exception if no entry is found
+									(<code>true</code> by default)</p>
+								</div>
+							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						<p>The object of type [T]</p>
@@ -2783,7 +2832,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/a16a98b/src/JabTable.ts#L22">JabTable.ts:22</a></li>
+								<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/7925ecc/src/JabTable.ts#L22">JabTable.ts:22</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Dictionary</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Entry</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -2800,7 +2849,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/a16a98b/src/JabTable.ts#L26">JabTable.ts:26</a></li>
+								<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/7925ecc/src/JabTable.ts#L26">JabTable.ts:26</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Table</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -2817,7 +2866,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/a16a98b/src/JabTable.ts#L94">JabTable.ts:94</a></li>
+								<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/7925ecc/src/JabTable.ts#L103">JabTable.ts:103</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2840,7 +2889,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/a16a98b/src/JabTable.ts#L165">JabTable.ts:165</a></li>
+								<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/7925ecc/src/JabTable.ts#L174">JabTable.ts:174</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2880,7 +2929,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/a16a98b/src/JabTable.ts#L183">JabTable.ts:183</a></li>
+								<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/7925ecc/src/JabTable.ts#L192">JabTable.ts:192</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2928,7 +2977,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/a16a98b/src/JabTable.ts#L147">JabTable.ts:147</a></li>
+								<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/7925ecc/src/JabTable.ts#L156">JabTable.ts:156</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2966,7 +3015,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/a16a98b/src/JabTable.ts#L131">JabTable.ts:131</a></li>
+								<li>Defined in <a href="https://github.com/jollycola/jabDB/blob/7925ecc/src/JabTable.ts#L140">JabTable.ts:140</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">

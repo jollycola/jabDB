@@ -134,7 +134,11 @@ describe("JabTable", () => {
         })
 
         it("get_not_found", () => {
-            expect(table.get("__not_found__")).to.eventually.be.rejectedWith(JabTableError)
+            expect(table.get("__not_found__")).to.eventually.be.rejectedWith(JabTableError);
+        })
+
+        it("get_not_found return undefined", async () => {
+            expect(await table.get("__not_found__", true)).to.be.undefined;
         })
 
         it("findFirst", async () => {
@@ -144,6 +148,11 @@ describe("JabTable", () => {
         it("findFirst_not_found", async () => {
             expect(table.findFirst<TestClass>((v) => v.string == "__not_found__"))
                 .to.eventually.be.rejectedWith(JabTableError)
+        })
+
+        it("findFirst_not_found return undefined", async () => {
+            expect(await table.findFirst<TestClass>((v) => v.string == "__not_found__", true))
+                .to.be.undefined;
         })
 
         it("findAll_defined", async () => {

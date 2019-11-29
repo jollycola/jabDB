@@ -19,7 +19,7 @@ export class SingleFileAdapter extends Adapter {
     /**
      * Creates an instance of SingleFileAdapter.
      * @param {string} source The path of the source file
-     * @param {boolean} [requireJSONFile=true] Whether to require the file to
+     * @param {boolean} requireJSONFile Whether to require the file to
      * be a .json file (``true`` by default)
      */
     constructor(source: string, requireJSONFile: boolean = true) {

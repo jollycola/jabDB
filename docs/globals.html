@@ -2460,8 +2460,8 @@ yarn add jabdb</code></pre>
 			<a href="#creating-entry-in-table" id="creating-entry-in-table" style="color: inherit; text-decoration: none;">
 				<h3>Creating entry in table</h3>
 			</a>
-			<pre><code class="language-typescript"><span class="hljs-keyword">const</span> id1 = <span class="hljs-keyword">await</span> users.createEntry({ name: <span class="hljs-string">"John Stone"</span>, age: <span class="hljs-number">30</span> });
-<span class="hljs-keyword">const</span> id2 = <span class="hljs-keyword">await</span> users.createEntry(
+			<pre><code class="language-typescript"><span class="hljs-keyword">const</span> id1 = <span class="hljs-keyword">await</span> users.create({ name: <span class="hljs-string">"John Stone"</span>, age: <span class="hljs-number">30</span> });
+<span class="hljs-keyword">const</span> id2 = <span class="hljs-keyword">await</span> users.create(
   { name: <span class="hljs-string">"John Stone"</span>, age: <span class="hljs-number">30</span> },
   <span class="hljs-string">"johnstone"</span>
 );

@@ -31,33 +31,42 @@ export default class JabTable {
     /**
      * Returns the object with the specified id.
      * @param id The id of the entry to get
+     * @param {boolean} returnUndefined if `true`, returns `undefined` instead of throwing exception if no entry is found
+     * (`true` by default)
      * @returns The object of type [T]
      * @throws Throws a {@link JabTableError} if entry does not exist in table
      */
-    public async get(id: string): Promise<any> {
+    public async get(id: string, returnUndefined: boolean = false): Promise<any> {
         const entries = await this.getEntries();
 
         return new Promise((resolve, reject) => {
             if (_.has(entries, id)) {
                 resolve(_.get(entries, id).value);
-            } else
-                reject(new EntryNotFoundError(id));
+            } else {
+                if (returnUndefined) resolve(undefined)
+                else reject(new EntryNotFoundError(id));
+            }
         });
     }
 
     /**
      * Returns the first object matching the predicate
      * @param predicate search predicate
+     * @param {boolean} returnUndefined if `true`, returns `undefined` instead of throwing exception if no entries found
+     * (`true` by default)
      * @returns The first object matching the predicate.
      * @throws Throws a {@link JabTableError} if entry does not exist in table
      */
-    public async findFirst<T = any>(predicate: (v: T) => boolean): Promise<T> {
+    public async findFirst<T = any>(predicate: (v: T) => boolean, returnUndefined: boolean = false): Promise<T> {
         const entries = await this.getEntries();
 
         return new Promise((resolve, reject) => {
             const value = _.find(entries, (v: Entry) => predicate(v.value));
 
-            if (value == undefined) reject(new EntryNotFoundError("UNKNOWN", "No entry matching predicate found!"));
+            if (value == undefined) {
+                if (returnUndefined) resolve(undefined);
+                else reject(new EntryNotFoundError("UNKNOWN", "No entry matching predicate found!"));
+            }
 
             if (Entry.isEntry(value))
                 resolve(value.value);
