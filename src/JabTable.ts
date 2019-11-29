@@ -33,7 +33,7 @@ export default class JabTable {
      * @param id The id of the entry to get
      * @param {boolean} returnUndefined if `true`, returns `undefined` instead of throwing exception if no entry is found
      * (`true` by default)
-     * @returns The object of type [T]
+     * @returns The object as a promise
      * @throws Throws a {@link JabTableError} if entry does not exist in table
      */
     public async get(id: string, returnUndefined: boolean = false): Promise<any> {

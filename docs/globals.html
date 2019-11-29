@@ -2430,7 +2430,10 @@ img {
 			<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
 				<h2>Installation</h2>
 			</a>
-			<pre><code class="language-sh">npm install jabdb --save
+			<pre><code class="language-sh"><span class="hljs-comment"># using npm</span>
+npm install jabdb --save
+
+<span class="hljs-comment"># using yarn</span>
 yarn add jabdb</code></pre>
 			<a href="#usage---typescript" id="usage---typescript" style="color: inherit; text-decoration: none;">
 				<h2>Usage - TypeScript</h2>
@@ -2440,7 +2443,7 @@ yarn add jabdb</code></pre>
 				<h3>Importing</h3>
 			</a>
 			<pre><code class="language-typescript"><span class="hljs-keyword">import</span> JabDB <span class="hljs-keyword">from</span> <span class="hljs-string">"jabdb"</span>;
-<span class="hljs-keyword">import</span> SingleFileAdapter <span class="hljs-keyword">from</span> <span class="hljs-string">"jabdb.adapters"</span>;</code></pre>
+<span class="hljs-keyword">import</span> { SingleFileAdapter } <span class="hljs-keyword">from</span> <span class="hljs-string">"jabdb/adapters"</span>;</code></pre>
 			<a href="#creating-the-database" id="creating-the-database" style="color: inherit; text-decoration: none;">
 				<h3>Creating the database</h3>
 			</a>
@@ -2461,10 +2464,7 @@ yarn add jabdb</code></pre>
 				<h3>Creating entry in table</h3>
 			</a>
 			<pre><code class="language-typescript"><span class="hljs-keyword">const</span> id1 = <span class="hljs-keyword">await</span> users.create({ name: <span class="hljs-string">"John Stone"</span>, age: <span class="hljs-number">30</span> });
-<span class="hljs-keyword">const</span> id2 = <span class="hljs-keyword">await</span> users.create(
-  { name: <span class="hljs-string">"John Stone"</span>, age: <span class="hljs-number">30</span> },
-  <span class="hljs-string">"johnstone"</span>
-);
+<span class="hljs-keyword">const</span> id2 = <span class="hljs-keyword">await</span> users.create({ name: <span class="hljs-string">"John Stone"</span>, age: <span class="hljs-number">30</span> }, <span class="hljs-string">"johnstone"</span>);
 
 <span class="hljs-comment">// id1 -&gt; "0" or next available id in table</span>
 <span class="hljs-comment">// id2 -&gt; "johnstone" if it is available else next available id</span></code></pre>
@@ -2477,6 +2477,31 @@ yarn add jabdb</code></pre>
 			</a>
 			<pre><code class="language-typescript"><span class="hljs-keyword">const</span> foundUser = <span class="hljs-keyword">await</span> users.findFirst(<span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> v.name == <span class="hljs-string">"John Stone"</span>);
 <span class="hljs-keyword">const</span> foundUsers = <span class="hljs-keyword">await</span> users.findAll(<span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> v.age == <span class="hljs-number">30</span>);</code></pre>
+			<a href="#updating-entry" id="updating-entry" style="color: inherit; text-decoration: none;">
+				<h3>Updating entry</h3>
+			</a>
+			<p>There are multiple ways of updating an entry:</p>
+			<a href="#put" id="put" style="color: inherit; text-decoration: none;">
+				<h4>Put</h4>
+			</a>
+			<p>The <a href="https://jollycola.github.io/jabDB/classes/jabtable.html#put">put</a> method overrides the entry with the specified id.</p>
+			<pre><code class="language-typescript"><span class="hljs-keyword">await</span> users.put(<span class="hljs-string">"johnstone"</span>, { name: <span class="hljs-string">"John Stone"</span>, age: <span class="hljs-number">31</span> });</code></pre>
+			<a href="#patch" id="patch" style="color: inherit; text-decoration: none;">
+				<h4>Patch</h4>
+			</a>
+			<p>The <a href="https://jollycola.github.io/jabDB/classes/jabtable.html#patch">patch</a> method updates the fields of the object specified. Patch is implemented using <a href="https://lodash.com/docs/#assignIn">assignIn</a> from Lodash.</p>
+			<pre><code class="language-typescript"><span class="hljs-keyword">await</span> users.patch(<span class="hljs-string">"johnstone"</span>, { age: <span class="hljs-number">32</span> });
+
+<span class="hljs-comment">// 'johnstone' -&gt; { name: "John Stone", age: 32 }</span></code></pre>
+			<a href="#patchwith" id="patchwith" style="color: inherit; text-decoration: none;">
+				<h4>PatchWith</h4>
+			</a>
+			<p>The <a href="https://jollycola.github.io/jabDB/classes/jabtable.html#patchwith">patchWith</a> method works like <code>patch</code>, but takes a customizer function. PatchWith is implemented using <a href="https://lodash.com/docs/#assignInWith">assignInWith</a> from Lodash.</p>
+			<p>See <a href="https://lodash.com/docs/#assignInWith">the Lodash documentation</a> for more info</p>
+			<a href="#deleting-entry" id="deleting-entry" style="color: inherit; text-decoration: none;">
+				<h3>Deleting entry</h3>
+			</a>
+			<pre><code class="language-typescript"><span class="hljs-keyword">await</span> users.delete(<span class="hljs-string">"johnstone"</span>);</code></pre>
 		</div>
 		<section class="tsd-panel-group tsd-index-group">
 			<h2>Index</h2>
