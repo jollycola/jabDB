@@ -156,8 +156,10 @@ export default class JabTable {
     }
 
     /**
-     * Patch an entry in the table, this updates the fields
-     * TODO: Write Doc
+     * Patch an entry in the table, this updates the fields specified.
+     * @param {...any} changes A list of changes to be made to the entry
+     *
+     * This method uses assignIn from lodash
      * @see https://lodash.com/docs/#assignIn
      */
     public patch(id: string, ...changes: any): Promise<any> {
@@ -169,8 +171,13 @@ export default class JabTable {
     }
 
     /**
-     * Patch an entry in the table, this updates the fields
-     * TODO: Write Doc
+     * Patch an entry in the table, this updates the fields specified.
+     * Uses the customizer if not null.
+     * @param {lodash.AssignCustomizer} customizer A customizer invoked to produce assigned values
+     * if customizer is null, the function acts the same as `patch` @see JabTable.patch
+     * @param {...any} changes A list of changes to be made to the entry
+     *
+     * This method uses assignInWith from lodash
      * @see https://lodash.com/docs/#assignInWith
      */
     public patchWith(id: string, customizer: _.AssignCustomizer, ...changes: any): Promise<any> {
@@ -180,7 +187,6 @@ export default class JabTable {
             if (_.has(table.entries, id)) {
                 let obj = _.get(table.entries, id).value;
 
-                // FIXME _.assignInWith not using the customizer
                 obj = _.assignInWith(obj, ...changes, customizer);
 
                 _.set(table.entries, id, new Entry(id, obj));

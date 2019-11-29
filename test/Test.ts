@@ -260,18 +260,24 @@ describe("JabTable", () => {
                 .to.be.rejectedWith(EntryNotFoundError);
         })
 
-        it.only("patchWith", async () => {
+        it("patchWith", async () => {
             const id = await table.create({ 'a': 1 });
 
             await table.patchWith(id, (objVal, srcVal) => {
-                console.log("running")
                 return objVal == undefined ? srcVal : objVal;
             }, { 'b': 2 }, { 'a': 3 });
 
             expect(await table.get(id)).to.deep.equal({ 'a': 1, 'b': 2 });
         })
 
-        // TODO patch and patchWith tests
+        it("patchWith_undefined", async () => {
+            const old = { "number": 1, "string": "lorem" };
+            const expected = { "number": 5, "string": "patch" };
+
+            await table.patchWith("1", undefined, { "number": 5, "string": "patch" });
+
+            expect(await table.get("1")).to.deep.equal(expected);
+        })
 
     })
 
