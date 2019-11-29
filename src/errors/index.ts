@@ -31,9 +31,11 @@ export class EntryNotFoundError extends JabTableError {
      */
     id: string;
 
-    constructor(id: string) {
-        super("No entry with id '" + id + "' found!");
+    constructor(id: string, message?: string) {
+        if (!message) message = "No entry with id '" + id + "' found!";
+        super(message);
     }
+
 }
 
 /**

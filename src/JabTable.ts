@@ -41,7 +41,7 @@ export default class JabTable {
             if (_.has(entries, id)) {
                 resolve(_.get(entries, id).value);
             } else
-                reject(new JabTableError("No entry with id '" + id + "' found!"));
+                reject(new EntryNotFoundError(id));
         });
     }
 
@@ -57,7 +57,7 @@ export default class JabTable {
         return new Promise((resolve, reject) => {
             const value = _.find(entries, (v: Entry) => predicate(v.value));
 
-            if (value == undefined) reject(new JabTableError("No entry matching predicate found!"));
+            if (value == undefined) reject(new EntryNotFoundError("UNKNOWN", "No entry matching predicate found!"));
 
             if (Entry.isEntry(value))
                 resolve(value.value);
@@ -200,6 +200,29 @@ export default class JabTable {
             }
         });
 
+    }
+
+
+    /**
+     * Delete an entry from the table by its id
+     *
+     * @param {string} id The id of the entry to remove
+     */
+    public delete(id: string): Promise<void> {
+        return new Promise(async (resolve, reject) => {
+            const table = await this.getTable();
+
+            if (_.has(table.entries, id)) {
+                _.unset(table.entries, id);
+
+                this.adapter.saveTable(table)
+                    .then(() => resolve())
+                    .catch(reject);
+
+            } else {
+                reject(new EntryNotFoundError(id));
+            }
+        });
     }
 
 

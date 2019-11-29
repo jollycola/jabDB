@@ -279,6 +279,16 @@ describe("JabTable", () => {
             expect(await table.get("1")).to.deep.equal(expected);
         })
 
+        it("remove", async () => {
+            const id = await table.create("delete");
+            await table.delete(id);
+            await expect(table.get(id)).to.eventually.be.rejectedWith(EntryNotFoundError);
+        })
+
+        it("remove_not_found", async () => {
+            await expect(table.delete("__not__found__")).to.eventually.be.rejectedWith(EntryNotFoundError);
+        })
+
     })
 
 })
