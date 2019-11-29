@@ -49,8 +49,8 @@ const users = await db.getTable("users");
 ### Creating entry in table
 
 ```typescript
-const id1 = await users.createEntry({ name: "John Stone", age: 30 });
-const id2 = await users.createEntry(
+const id1 = await users.create({ name: "John Stone", age: 30 });
+const id2 = await users.create(
   { name: "John Stone", age: 30 },
   "johnstone"
 );
