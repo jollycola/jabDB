@@ -23,7 +23,7 @@ WORK IN PROGRESS
 ### Importing
 
 ```typescript
-import JabDB from "jabdb";
+import { JabDB } from "jabdb";
 import { SingleFileAdapter } from "jabdb/adapters";
 ```
 

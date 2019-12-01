@@ -27,6 +27,18 @@ export default class JabTable {
         return (await this.adapter.getTable(this._name));
     }
 
+    /**
+     * Returns the amount of entries in the table
+     *
+     * @returns {Promise<Number>} the amount of entries in the table as a promise
+     */
+    public async count(): Promise<Number> {
+        return new Promise((resolve, reject) => {
+            this.getEntries()
+                .then(entries => resolve(_.size(entries)))
+                .catch(reject);
+        });
+    }
 
     /**
      * Returns the object with the specified id.
@@ -36,17 +48,20 @@ export default class JabTable {
      * @returns The object as a promise
      * @throws Throws a {@link JabTableError} if entry does not exist in table
      */
-    public async get(id: string, returnUndefined: boolean = false): Promise<any> {
-        const entries = await this.getEntries();
+    public async get(id: string, returnUndefined: boolean = false): Promise<JabEntry> {
+        return new Promise<JabEntry>(async (resolve, reject) => {
+            const entries = await this.getEntries();
 
-        return new Promise((resolve, reject) => {
-            if (_.has(entries, id)) {
-                resolve(_.get(entries, id).value);
+            let val;
+            if (val = _.get(entries, id)) {
+                resolve(new JabEntry(val));
             } else {
-                if (returnUndefined) resolve(undefined)
-                else reject(new EntryNotFoundError(id));
+                if (returnUndefined) {
+                    resolve(new JabEntry(undefined));
+                } else reject(new EntryNotFoundError(id));
             }
         });
+
     }
 
     /**
@@ -57,22 +72,24 @@ export default class JabTable {
      * @returns The first object matching the predicate.
      * @throws Throws a {@link JabTableError} if entry does not exist in table
      */
-    public async findFirst<T = any>(predicate: (v: T) => boolean, returnUndefined: boolean = false): Promise<T> {
-        const entries = await this.getEntries();
+    public findFirst<T = any>(predicate: (v: T) => boolean, returnUndefined: boolean = false): Promise<JabEntry> {
+        return new Promise<JabEntry>(async (resolve, reject) => {
+            const entries = await this.getEntries();
 
-        return new Promise((resolve, reject) => {
             const value = _.find(entries, (v: Entry) => predicate(v.value));
 
             if (value == undefined) {
-                if (returnUndefined) resolve(undefined);
-                else reject(new EntryNotFoundError("UNKNOWN", "No entry matching predicate found!"));
+                if (returnUndefined) {
+                    resolve(new JabEntry(undefined));
+                } else {
+                    reject(new EntryNotFoundError("UNKNOWN", "No entry matching predicate found!"));
+                }
+            } else {
+                if (Entry.isEntry(value)) {
+                    resolve(new JabEntry(value));
+                } else
+                    reject(new TypeError("Object returned was not of type 'Entry'"));
             }
-
-            if (Entry.isEntry(value))
-                resolve(value.value);
-            else
-                reject(new TypeError("Object returned was no of type 'Entry'"));
-
         });
 
     }
@@ -82,8 +99,8 @@ export default class JabTable {
      * @param predicate search predicate
      * @returns All objects matching the predicate as an array. Empty array if none was found
      */
-    public async findAll<T = any>(predicate: (v: T) => boolean): Promise<T[]> {
-        return new Promise(async (resolve, reject) => {
+    public findAll<T = any>(predicate: (v: T) => boolean): Promise<JabEntry[]> {
+        return new Promise<JabEntry[]>(async (resolve, reject) => {
             const entries = await this.getEntries();
 
             const values = _.filter(entries, (v: Entry) => predicate(v.value));
@@ -93,7 +110,7 @@ export default class JabTable {
             } else {
                 if (this.isEntries(values)) {
                     resolve(_.map(values, (entry) => {
-                        return entry.value;
+                        return new JabEntry(entry);
                     }));
                 }
             }
