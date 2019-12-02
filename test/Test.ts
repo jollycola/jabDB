@@ -133,7 +133,7 @@ describe("JabTable", () => {
         })
 
         it("get", async () => {
-            assert.isDefined((await table.get("1")).value())
+            assert.isDefined(await table.get("1").value())
         })
 
         it("get_not_found", async () => {
@@ -141,8 +141,7 @@ describe("JabTable", () => {
         })
 
         it("get_not_found return undefined", async () => {
-            console.log(await table.get("__not_found__", true));
-            expect((await table.get("__not_found__", true)).value()).to.be.undefined;
+            expect(await table.get("__not_found__", true).value()).to.be.undefined;
         })
 
         it("findFirst", async () => {
@@ -160,7 +159,7 @@ describe("JabTable", () => {
         })
 
         it("findAll_defined", async () => {
-            assert.isDefined(await table.findAll(v => v.string == "lorem"));
+            expect(await table.findAll(v => v.string == "lorem")).to.exist;
         })
 
         it("findAll_none", async () => {
@@ -202,13 +201,13 @@ describe("JabTable", () => {
         it("create", async () => {
             const id = await table.create(new TestClass(5, "lorem ipsum"));
 
-            expect(await (await table.get(id)).value()).to.exist;
+            expect(await table.get(id).value()).to.exist;
         })
 
         it("create_generated_id", async () => {
             const id = await table.create(new TestClass(5, "lorem ipsum"));
 
-            expect(await (await table.get(id)).value()).to.exist;
+            expect(await table.get(id).value()).to.exist;
         })
 
         it("create_generated_id_increments", async () => {
@@ -229,7 +228,7 @@ describe("JabTable", () => {
             const id = "put_test";
             await table.put(id, expected);
 
-            const received = await (await table.get(id)).value();
+            const received = await table.get(id).value();
 
             expect(received).to.exist
                 .and.deep.equal(expected);
@@ -245,7 +244,7 @@ describe("JabTable", () => {
 
             await table.put(id, expected);
 
-            const received = await (await table.get(id)).value();
+            const received = await table.get(id).value();
 
             expect(received).to.exist
                 .and.to.deep.equal(expected)
@@ -259,7 +258,7 @@ describe("JabTable", () => {
 
             await table.patch("1", { "number": 5, "string": "patch" });
 
-            expect(await (await table.get("1")).value()).to.deep.equal(expected);
+            expect(await table.get("1").value()).to.deep.equal(expected);
         })
 
         it("patch_multiple_changes", async () => {
@@ -268,7 +267,7 @@ describe("JabTable", () => {
 
             await table.patch("1", { "number": 5 }, { "string": "patch" });
 
-            expect(await (await table.get("1")).value()).to.deep.equal(expected);
+            expect(await table.get("1").value()).to.deep.equal(expected);
         })
 
         it("patch_not_found", async () => {
@@ -283,7 +282,7 @@ describe("JabTable", () => {
                 return objVal == undefined ? srcVal : objVal;
             }, { 'b': 2 }, { 'a': 3 });
 
-            expect(await (await table.get(id)).value()).to.deep.equal({ 'a': 1, 'b': 2 });
+            expect(await table.get(id).value()).to.deep.equal({ 'a': 1, 'b': 2 });
         })
 
         it("patchWith_undefined", async () => {
@@ -292,7 +291,7 @@ describe("JabTable", () => {
 
             await table.patchWith("1", undefined, { "number": 5, "string": "patch" });
 
-            expect(await (await table.get("1")).value()).to.deep.equal(expected);
+            expect(await table.get("1").value()).to.deep.equal(expected);
         })
 
         it("remove", async () => {
