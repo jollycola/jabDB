@@ -2,26 +2,18 @@ import JabTable from "./JabTable";
 import { Entry } from "./model";
 
 export default class JabEntry {
-    private entry: Promise<Entry>;
+    private entry: Entry;
 
-    constructor(entry: Promise<Entry>) {
+    constructor(entry: Entry) {
         this.entry = entry;
     }
 
-    public async value(): Promise<any> {
-        return new Promise<any>(async (resolve, reject) => {
-            if (this.entry)
-                resolve((await this.entry).value);
-            else
-                resolve(undefined);
-        });
-
+    public value(): any {
+        return this.entry.value;
     }
 
-    public async id(): Promise<string> {
-        return new Promise<string>(async (resolve, reject) => {
-            resolve((await this.entry).id);
-        });
+    public id(): string {
+        return this.entry.id;
     }
 
 }

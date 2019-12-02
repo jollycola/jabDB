@@ -137,7 +137,7 @@ describe("JabTable", () => {
         })
 
         it("get_not_found", async () => {
-            expect(((table.get("__not_found__")))).to.be.rejectedWith(JabTableError);
+            expect(table.get("__not_found__").value()).to.be.rejectedWith(JabTableError);
         })
 
         it("get_not_found return undefined", async () => {
@@ -145,38 +145,30 @@ describe("JabTable", () => {
         })
 
         it("findFirst", async () => {
-            assert.isDefined(await table.findFirst<TestClass>((v) => v.string == "lorem"));
+            assert.isDefined(await table.find<TestClass>((v) => v.string == "lorem").value());
         })
 
         it("findFirst_not_found", async () => {
-            expect(table.findFirst<TestClass>((v) => v.string == "__not_found__"))
-                .to.eventually.be.rejectedWith(JabTableError)
-        })
-
-        it("findFirst_not_found return undefined", async () => {
-            expect((await table.findFirst<TestClass>((v) => v.string == "__not_found__", true)).value())
+            expect(await table.find<TestClass>((v) => v.string == "__not_found__").value())
                 .to.be.undefined;
         })
 
         it("findAll_defined", async () => {
-            expect(await table.findAll(v => v.string == "lorem")).to.exist;
+            expect(await table.find(v => v.string == "lorem").values()).to.exist;
         })
 
         it("findAll_none", async () => {
-            expect((await table.findAll(v => v.string == "__notexisting__")).length).to.equal(0);
+            expect((await table.find(v => v.string == "__notexisting__").values()).length).to.equal(0);
         })
 
         it("findAll_length", async () => {
-            expect((await table.findAll(v => v.string == "lorem")).length).to.equal(1);
+            expect((await table.find(v => v.string == "lorem").values()).length).to.equal(1);
         })
 
         it("findAll_two", async () => {
             const expected = [new TestClass(2, "ipsum"), new TestClass(2, "ipsum")]
 
-            let found: any[];
-            await table.findAll<TestClass>(v => v.string == "ipsum").then(value => {
-                found = value.map((v) => v.value());
-            });
+            let found = await table.find<TestClass>(v => v.string == "ipsum").values();
 
             expect(found).to.deep.eq(expected);
         })
@@ -297,7 +289,7 @@ describe("JabTable", () => {
         it("remove", async () => {
             const id = await table.create("delete");
             await table.delete(id);
-            await expect(table.get(id)).to.eventually.be.rejectedWith(EntryNotFoundError);
+            await expect(table.get(id).values()).to.eventually.be.rejectedWith(EntryNotFoundError);
         })
 
         it("remove_not_found", async () => {

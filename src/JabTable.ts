@@ -5,6 +5,7 @@ import Adapter from "./adapters/Adapter";
 import { Entry, Table } from "./model";
 import JabEntry from "./JabEntry";
 import { rejects } from "assert";
+import { JabResult } from "./JabQuery";
 
 export default class JabTable {
     private _name: string;
@@ -48,52 +49,21 @@ export default class JabTable {
      * @returns The object as a promise
      * @throws Throws a {@link JabTableError} if entry does not exist in table
      */
-    public get(id: string, returnUndefined: boolean = false): JabEntry {
-        const entryPromise = new Promise<Entry>(async (resolve, reject) => {
+    public get(id: string, returnUndefined: boolean = false): JabResult {
+        const entryPromise = new Promise<Entry[]>(async (resolve, reject) => {
             const entries = await this.getEntries();
 
             let val;
             if (val = _.get(entries, id)) {
-                resolve(val);
+                resolve([val]);
             } else {
                 if (returnUndefined) {
-                    resolve(undefined);
+                    resolve([]);
                 } else reject(new EntryNotFoundError(id));
             }
         });
 
-        return new JabEntry(entryPromise);
-    }
-
-    /**
-     * Returns the first object matching the predicate
-     * @param predicate search predicate
-     * @param {boolean} returnUndefined if `true`, returns `undefined` instead of throwing exception if no entries found
-     * (`true` by default)
-     * @returns The first object matching the predicate.
-     * @throws Throws a {@link JabTableError} if entry does not exist in table
-     */
-    public findFirst<T = any>(predicate: (v: T) => boolean, returnUndefined: boolean = false): JabEntry {
-        const entryPromise = new Promise<Entry>(async (resolve, reject) => {
-            const entries = await this.getEntries();
-
-            const value = _.find(entries, (v: Entry) => predicate(v.value));
-
-            if (value == undefined) {
-                if (returnUndefined) {
-                    resolve(undefined);
-                } else {
-                    reject(new EntryNotFoundError("UNKNOWN", "No entry matching predicate found!"));
-                }
-            } else {
-                if (Entry.isEntry(value)) {
-                    resolve(value);
-                } else
-                    reject(new TypeError("Object returned was not of type 'Entry'"));
-            }
-        });
-
-        return new JabEntry(entryPromise);
+        return new JabResult(entryPromise);
     }
 
     /**
@@ -101,9 +71,9 @@ export default class JabTable {
      * @param predicate search predicate
      * @returns All objects matching the predicate as an array. Empty array if none was found
      */
-    public async findAll<T = any>(predicate: (v: T) => boolean): Promise<JabEntry[]> {
+    public find<T = any>(predicate: (v: T) => boolean): JabResult {
 
-        return new Promise<JabEntry[]>(async (resolve, reject) => {
+        const promise = new Promise<Entry[]>(async (resolve, reject) => {
             const entries = await this.getEntries();
 
             const values = _.filter(entries, (v: Entry) => predicate(v.value));
@@ -112,12 +82,12 @@ export default class JabTable {
                 resolve([]);
             } else {
                 if (this.isEntries(values)) {
-                    resolve(_.map(values, (entry) => {
-                        return new JabEntry(Promise.resolve(entry));
-                    }));
+                    resolve(values);
                 }
             }
         });
+
+        return new JabResult(promise);
     }
 
     private isEntries(array: Entry[] | any[]): array is Entry[] {
