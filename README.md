@@ -62,14 +62,14 @@ const id2 = await users.create({ name: "John Stone", age: 30 }, "johnstone");
 ### Getting object by its id
 
 ```typescript
-const user = await users.get("johnstone");
+const user = await users.get("johnstone").value();
 ```
 
 ### Finding entry
 
 ```typescript
-const foundUser = await users.findFirst(v => v.name == "John Stone");
-const foundUsers = await users.findAll(v => v.age == 30);
+const foundUser = await users.findFirst(v => v.name == "John Stone").value();
+const foundUsers = await users.findAll(v => v.age == 30).values();
 ```
 
 ### Updating entry

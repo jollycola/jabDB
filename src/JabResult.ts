@@ -9,6 +9,12 @@ export class JabResult {
         this._entries = entries;
     }
 
+    /**
+     * Get the first value of result
+     *
+     * @returns {Promise<any>}
+     * @memberof JabResult
+     */
     public value(): Promise<any> {
         return new Promise((resolve, reject) => {
             this._entries
@@ -23,6 +29,12 @@ export class JabResult {
         });
     }
 
+    /**
+     * Get all values of a result as an array
+     *
+     * @returns {Promise<any[]>}
+     * @memberof JabResult
+     */
     public values(): Promise<any[]> {
         return new Promise((resolve, reject) => {
             this._entries
@@ -32,6 +44,9 @@ export class JabResult {
 
     }
 
+    /** 
+     * Get the first id of a result
+     */
     public id(): Promise<string> {
         return new Promise<string>((resolve, reject) => {
             this._entries
@@ -46,6 +61,12 @@ export class JabResult {
         });
     }
 
+    /**
+     * Get all ids of a result as an array
+     *
+     * @returns {Promise<string[]>}
+     * @memberof JabResult
+     */
     public ids(): Promise<string[]> {
         return new Promise((resolve, reject) => {
             this._entries
@@ -54,6 +75,13 @@ export class JabResult {
         });
     }
 
+    /**
+     * Get the entry of a result.
+     * An entry contains both the value and the id
+     *
+     * @returns {Promise<JabEntry>}
+     * @memberof JabResult
+     */
     public entry(): Promise<JabEntry> {
         return new Promise<JabEntry>((resolve, reject) => {
             this._entries
@@ -68,6 +96,13 @@ export class JabResult {
         });
     }
 
+    /**
+     * Get all entries of a result as an array.
+     * An entry contains both the value and the id
+     *
+     * @returns {Promise<JabEntry[]>}
+     * @memberof JabResult
+     */
     public entries(): Promise<JabEntry[]> {
         return new Promise((resolve, reject) => {
             this._entries

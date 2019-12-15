@@ -5,7 +5,7 @@ import Adapter from "./adapters/Adapter";
 import { Entry, Table } from "./model";
 import JabEntry from "./JabEntry";
 import { rejects } from "assert";
-import { JabResult } from "./JabQuery";
+import { JabResult } from "./JabResult";
 
 export default class JabTable {
     private _name: string;
