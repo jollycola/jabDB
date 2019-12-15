@@ -23,8 +23,8 @@ WORK IN PROGRESS
 ### Importing
 
 ```typescript
-import { JabDB } from "jabdb";
-import { SingleFileAdapter } from "jabdb/adapters";
+import JabDB from "jabdb";
+import { SingleFileAdapter } from "jabdb";
 ```
 
 ### Creating the database

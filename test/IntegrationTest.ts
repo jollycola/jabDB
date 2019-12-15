@@ -1,5 +1,5 @@
-import { JabDB } from "../src"
-import { SingleFileAdapter } from "../src/adapters"
+import JabDB from "../src"
+import { SingleFileAdapter } from "../src"
 
 import chai, { assert, expect } from "chai";
 import fs from "fs";

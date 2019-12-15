@@ -1,1 +1,4 @@
-export { default as JabDB } from "./JabDB";
+import JabDB from "./JabDB";
+
+export default JabDB;
+export * from "./adapters";
