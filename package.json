@@ -1,11 +1,12 @@
 {
   "name": "jabdb",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Just A Basic Database",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "repository": "https://github.com/jollycola/jabDB.git",
   "author": "Mathias Andresen <dev@andresen.xyz>",
+  "files": ["dist/"],
   "license": "MIT",
   "scripts": {
     "clean": "rm -rf dist",
