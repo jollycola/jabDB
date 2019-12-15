@@ -1,6 +1,6 @@
 ![](https://github.com/jollycola/jabDB/workflows/Build/badge.svg)
 
-<img src="media\jabdb_banner.svg" alt="drawing" height="80"/>
+<img src="media/jabdb_banner@0.5x.png" alt="jabdb" height="80"/>
 
 WORK IN PROGRESS
 
