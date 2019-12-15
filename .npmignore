@@ -1,0 +1,6 @@
+src/
+docs/
+test/
+coverage/
+.vscode/
+.nyc_output/

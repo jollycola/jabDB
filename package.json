@@ -19,7 +19,6 @@
     "coverage": "nyc yarn test",
     "docs": "typedoc --out docs --target es6 --theme minimal --mode file src"
   },
-  "private": true,
   "dependencies": {
     "lodash": "^4.17.15"
   },
