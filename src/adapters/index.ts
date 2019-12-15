@@ -1,1 +1,1 @@
-export * from "./SingleFileAdapter"
+export * from "./SingleFileAdapter";

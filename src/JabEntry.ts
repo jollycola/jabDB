@@ -1,18 +1,19 @@
+import JabTable from "./JabTable";
+import { Entry } from "./model";
+
 export default class JabEntry {
-    private id: string;
-    private value: any;
+    private entry: Entry;
 
-    constructor(id: string, value: any){
-        this.id = id;
-        this.value = value;
-    }
-    
-    getValue() {
-        return this.value;
+    constructor(entry: Entry) {
+        this.entry = entry;
     }
 
-    getId() {
-        return this.id;
+    public value(): any {
+        return this.entry.value;
+    }
+
+    public id(): string {
+        return this.entry.id;
     }
 
 }

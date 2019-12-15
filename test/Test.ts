@@ -128,49 +128,47 @@ describe("JabTable", () => {
             table = new JabTable("test_table", adapter);
         })
 
-
-        it("get", async () => {
-            assert.isDefined(await table.get("1"))
+        it("count", async () => {
+            expect(await table.count()).to.equal(3);
         })
 
-        it("get_not_found", () => {
-            expect(table.get("__not_found__")).to.eventually.be.rejectedWith(JabTableError);
+        it("get", async () => {
+            assert.isDefined(await table.get("1").value())
+        })
+
+        it("get_not_found", async () => {
+            expect(table.get("__not_found__").value()).to.be.rejectedWith(JabTableError);
         })
 
         it("get_not_found return undefined", async () => {
-            expect(await table.get("__not_found__", true)).to.be.undefined;
+            expect(await table.get("__not_found__", true).value()).to.be.undefined;
         })
 
         it("findFirst", async () => {
-            assert.isDefined(await table.findFirst<TestClass>((v) => v.string == "lorem"));
+            assert.isDefined(await table.find<TestClass>((v) => v.string == "lorem").value());
         })
 
         it("findFirst_not_found", async () => {
-            expect(table.findFirst<TestClass>((v) => v.string == "__not_found__"))
-                .to.eventually.be.rejectedWith(JabTableError)
-        })
-
-        it("findFirst_not_found return undefined", async () => {
-            expect(await table.findFirst<TestClass>((v) => v.string == "__not_found__", true))
+            expect(await table.find<TestClass>((v) => v.string == "__not_found__").value())
                 .to.be.undefined;
         })
 
         it("findAll_defined", async () => {
-            assert.isDefined(await table.findAll(v => v.string == "lorem"));
+            expect(await table.find(v => v.string == "lorem").values()).to.exist;
         })
 
         it("findAll_none", async () => {
-            expect((await table.findAll(v => v.string == "__notexisting__")).length).to.equal(0);
+            expect((await table.find(v => v.string == "__notexisting__").values()).length).to.equal(0);
         })
 
         it("findAll_length", async () => {
-            expect((await table.findAll(v => v.string == "lorem")).length).to.equal(1);
+            expect((await table.find(v => v.string == "lorem").values()).length).to.equal(1);
         })
 
         it("findAll_two", async () => {
             const expected = [new TestClass(2, "ipsum"), new TestClass(2, "ipsum")]
 
-            const found = await table.findAll(v => v.string == "ipsum");
+            let found = await table.find<TestClass>(v => v.string == "ipsum").values();
 
             expect(found).to.deep.eq(expected);
         })
@@ -195,13 +193,13 @@ describe("JabTable", () => {
         it("create", async () => {
             const id = await table.create(new TestClass(5, "lorem ipsum"));
 
-            assert.isDefined(await table.get(id))
+            expect(await table.get(id).value()).to.exist;
         })
 
         it("create_generated_id", async () => {
             const id = await table.create(new TestClass(5, "lorem ipsum"));
 
-            assert.isDefined(await table.get(id))
+            expect(await table.get(id).value()).to.exist;
         })
 
         it("create_generated_id_increments", async () => {
@@ -222,7 +220,7 @@ describe("JabTable", () => {
             const id = "put_test";
             await table.put(id, expected);
 
-            const received = await table.get(id);
+            const received = await table.get(id).value();
 
             expect(received).to.exist
                 .and.deep.equal(expected);
@@ -238,7 +236,7 @@ describe("JabTable", () => {
 
             await table.put(id, expected);
 
-            const received = await table.get(id);
+            const received = await table.get(id).value();
 
             expect(received).to.exist
                 .and.to.deep.equal(expected)
@@ -252,7 +250,7 @@ describe("JabTable", () => {
 
             await table.patch("1", { "number": 5, "string": "patch" });
 
-            expect(await table.get("1")).to.deep.equal(expected);
+            expect(await table.get("1").value()).to.deep.equal(expected);
         })
 
         it("patch_multiple_changes", async () => {
@@ -261,7 +259,7 @@ describe("JabTable", () => {
 
             await table.patch("1", { "number": 5 }, { "string": "patch" });
 
-            expect(await table.get("1")).to.deep.equal(expected);
+            expect(await table.get("1").value()).to.deep.equal(expected);
         })
 
         it("patch_not_found", async () => {
@@ -276,7 +274,7 @@ describe("JabTable", () => {
                 return objVal == undefined ? srcVal : objVal;
             }, { 'b': 2 }, { 'a': 3 });
 
-            expect(await table.get(id)).to.deep.equal({ 'a': 1, 'b': 2 });
+            expect(await table.get(id).value()).to.deep.equal({ 'a': 1, 'b': 2 });
         })
 
         it("patchWith_undefined", async () => {
@@ -285,13 +283,13 @@ describe("JabTable", () => {
 
             await table.patchWith("1", undefined, { "number": 5, "string": "patch" });
 
-            expect(await table.get("1")).to.deep.equal(expected);
+            expect(await table.get("1").value()).to.deep.equal(expected);
         })
 
         it("remove", async () => {
             const id = await table.create("delete");
             await table.delete(id);
-            await expect(table.get(id)).to.eventually.be.rejectedWith(EntryNotFoundError);
+            await expect(table.get(id).values()).to.eventually.be.rejectedWith(EntryNotFoundError);
         })
 
         it("remove_not_found", async () => {
@@ -409,7 +407,7 @@ describe("Guide Tests", () => {
 
         const id = await users.create(expected);
 
-        const received = await users.get(id);
+        const received = await (await users.get(id)).value();
 
         expect(received).to.deep.equal(expected);
 
@@ -431,7 +429,6 @@ describe("Guide Tests", () => {
     })
 
 });
-
 
 
 class TestClass {

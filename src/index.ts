@@ -1,1 +1,1 @@
-export * from "JabDB";
+export { default as JabDB } from "./JabDB";

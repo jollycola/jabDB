@@ -1,4 +1,8 @@
-export * from "./table"
-export * from "./entry"
-export * from "./database"
-export * from "./meta"
+/**
+ * @hidden
+ * @internal
+ */
+export * from "./table";
+export * from "./entry";
+export * from "./database";
+export * from "./meta";
