@@ -2399,6 +2399,9 @@ img {
 			<a href="classes/jabentry.html" class="tsd-kind-icon">Jab<wbr>Entry</a>
 		</li>
 		<li class=" tsd-kind-class">
+			<a href="classes/jabresult.html" class="tsd-kind-icon">Jab<wbr>Result</a>
+		</li>
+		<li class=" tsd-kind-class">
 			<a href="classes/jabtable.html" class="tsd-kind-icon">Jab<wbr>Table</a>
 		</li>
 		<li class=" tsd-kind-class">
@@ -2422,9 +2425,7 @@ img {
 	<div class="content-wrap">
 		<div class="tsd-panel tsd-typography">
 			<p><img src="https://github.com/jollycola/jabDB/workflows/Build/badge.svg" alt=""></p>
-			<a href="#jabdb" id="jabdb" style="color: inherit; text-decoration: none;">
-				<h1>jabDB</h1>
-			</a>
+			<img src="media\jabdb_banner.svg" alt="drawing" height="80"/>
 			<p>WORK IN PROGRESS</p>
 			<p>Just A Basic DataBase, a TypeScript-first simple json database for storing plain objects.</p>
 			<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
@@ -2442,7 +2443,7 @@ yarn add jabdb</code></pre>
 			<a href="#importing" id="importing" style="color: inherit; text-decoration: none;">
 				<h3>Importing</h3>
 			</a>
-			<pre><code class="language-typescript"><span class="hljs-keyword">import</span> JabDB <span class="hljs-keyword">from</span> <span class="hljs-string">"jabdb"</span>;
+			<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { JabDB } <span class="hljs-keyword">from</span> <span class="hljs-string">"jabdb"</span>;
 <span class="hljs-keyword">import</span> { SingleFileAdapter } <span class="hljs-keyword">from</span> <span class="hljs-string">"jabdb/adapters"</span>;</code></pre>
 			<a href="#creating-the-database" id="creating-the-database" style="color: inherit; text-decoration: none;">
 				<h3>Creating the database</h3>
@@ -2471,12 +2472,12 @@ yarn add jabdb</code></pre>
 			<a href="#getting-object-by-its-id" id="getting-object-by-its-id" style="color: inherit; text-decoration: none;">
 				<h3>Getting object by its id</h3>
 			</a>
-			<pre><code class="language-typescript"><span class="hljs-keyword">const</span> user = <span class="hljs-keyword">await</span> users.get(<span class="hljs-string">"johnstone"</span>);</code></pre>
+			<pre><code class="language-typescript"><span class="hljs-keyword">const</span> user = <span class="hljs-keyword">await</span> users.get(<span class="hljs-string">"johnstone"</span>).value();</code></pre>
 			<a href="#finding-entry" id="finding-entry" style="color: inherit; text-decoration: none;">
 				<h3>Finding entry</h3>
 			</a>
-			<pre><code class="language-typescript"><span class="hljs-keyword">const</span> foundUser = <span class="hljs-keyword">await</span> users.findFirst(<span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> v.name == <span class="hljs-string">"John Stone"</span>);
-<span class="hljs-keyword">const</span> foundUsers = <span class="hljs-keyword">await</span> users.findAll(<span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> v.age == <span class="hljs-number">30</span>);</code></pre>
+			<pre><code class="language-typescript"><span class="hljs-keyword">const</span> foundUser = <span class="hljs-keyword">await</span> users.findFirst(<span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> v.name == <span class="hljs-string">"John Stone"</span>).value();
+<span class="hljs-keyword">const</span> foundUsers = <span class="hljs-keyword">await</span> users.findAll(<span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> v.age == <span class="hljs-number">30</span>).values();</code></pre>
 			<a href="#updating-entry" id="updating-entry" style="color: inherit; text-decoration: none;">
 				<h3>Updating entry</h3>
 			</a>
@@ -2523,6 +2524,7 @@ yarn add jabdb</code></pre>
 							<li class="tsd-kind-class"><a href="classes/jabdb.html" class="tsd-kind-icon">JabDB</a></li>
 							<li class="tsd-kind-class"><a href="classes/jabdbmeta.html" class="tsd-kind-icon">JabDBMeta</a></li>
 							<li class="tsd-kind-class"><a href="classes/jabentry.html" class="tsd-kind-icon">Jab<wbr>Entry</a></li>
+							<li class="tsd-kind-class"><a href="classes/jabresult.html" class="tsd-kind-icon">Jab<wbr>Result</a></li>
 							<li class="tsd-kind-class"><a href="classes/jabtable.html" class="tsd-kind-icon">Jab<wbr>Table</a></li>
 							<li class="tsd-kind-class"><a href="classes/jabtablealreadyexistserror.html" class="tsd-kind-icon">Jab<wbr>Table<wbr>Already<wbr>Exists<wbr>Error</a></li>
 							<li class="tsd-kind-class"><a href="classes/singlefileadapter.html" class="tsd-kind-icon">Single<wbr>File<wbr>Adapter</a></li>
